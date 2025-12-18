@@ -131,15 +131,20 @@ int main( int _argc, char ** _argv )
 			window->sendRenderData( triangleVAO, triangles, triangleColors );
 
 			// Rotate the object
-			GLfloat const rotationAngle = static_cast< GLfloat >( lastInterval ) / 1000.0f * 20.0f;
+			static GLfloat rotationAngle = 0.0f;
+			const clock_t now = clock();
+			const GLfloat deltaTime = static_cast<GLfloat>(now - lastInterval) / CLOCKS_PER_SEC; // seconds
+			lastInterval = now;
+
+			rotationAngle += deltaTime * 200.0f; // 20 degrees per second
+
 			glm::mat4x4 const scalingMatrix = glm::scale( glm::mat4( 1.0f ), glm::vec3( 100.0f, 100.0f, 100.0f ) );
-			glm::mat4x4 const rotationMatrix = glm::rotate( glm::mat4( 1.0f ), glm::radians( DegreeAngle( rotationAngle ).toFloat() ), glm::vec3( 0.0f, 1.0f, 0.0f ) );
+			glm::mat4x4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
 			glm::mat4x4 const modelMatrix = rotationMatrix * scalingMatrix;
 
 			window->renderTriangles( triangleVAO, triangles.size() / 3, modelMatrix );
 			window->renderPoints( pointVAO, points.size(), scalingMatrix );
 
-			lastInterval = clock();
 			window->swapBuffer();
 		}
 	}
