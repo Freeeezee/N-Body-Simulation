@@ -1,6 +1,5 @@
 #ifndef N_BODY_SIMULATION_SIMULATION_H
 #define N_BODY_SIMULATION_SIMULATION_H
-#include <array>
 
 #include "models/Body.hpp"
 
@@ -14,7 +13,7 @@ public:
 
 private:
     const float timeStep;
-    const std::vector<Body> bodies;
+    std::vector<Body> bodies;
 };
 
 

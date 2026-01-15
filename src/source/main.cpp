@@ -8,11 +8,16 @@
 int main()
 {
     const auto bodies = generateBodies(
-        10000,
+        500,
+        1.0f,
+        1.0f,
         {-200.0f, -200.0f, -200.0f},
         {200.0f, 200.0f, 200.0f},
         {-1.0f, -1.0f, -1.0f},
-        {1.0f, 1.0f, 1.0f});
+        {1.0f, 1.0f, 1.0f},
+        {
+            Body(1000000.0f, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}),
+        });
 
     const auto simulation = new Simulation(1, bodies);
 
