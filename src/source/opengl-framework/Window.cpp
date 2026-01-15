@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <utility>
 #include "OpenGLErrorHandling.hpp"
 
 /**
@@ -455,6 +456,10 @@ Camera Window::getCamera() const
 	return Camera( m_camera );
 }
 
+void Window::setSpacebarHandler(std::function<void()> _handler) {
+	m_spacebarHandler = std::move(_handler);
+}
+
 /**
 	GLFW keyboard callback function.
 
@@ -565,6 +570,10 @@ void Window::handleKeyEvent( GLint const & _key,
 				case GLFW_KEY_R:
 					m_camera.setEyePoint( glm::vec4( 0.0f, 0.0f, 500.0f, 1.0f ) );
 					m_camera.resetAngles();
+					break;
+
+				case GLFW_KEY_SPACE:
+					m_spacebarHandler();
 					break;
 
 				default:

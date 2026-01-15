@@ -51,6 +51,8 @@ public:
 
 	Camera getCamera() const;
 
+	void setSpacebarHandler(std::function<void()> _handler);
+
 private:
 	static void handleKeyEvent( GLFWwindow * _window,
 								GLint _key,
@@ -78,4 +80,6 @@ private:
 	GLuint m_shaderProgram;		//!< The shader program to render.
 	Camera m_camera;			//!< The camera instance.
 	GLFWwindow * m_window;		//!< The glfw window instance. Can be null before initialization.
+
+	std::function<void()> m_spacebarHandler;
 };
