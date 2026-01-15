@@ -1,6 +1,6 @@
 #ifndef N_BODY_SIMULATION_RUNSIMULATION_H
 #define N_BODY_SIMULATION_RUNSIMULATION_H
-#include "Simulation.hpp"
+#include "simulations/Simulation.hpp"
 #include "models/Body.hpp"
 
 void runSimulation(std::vector<std::vector<Body>> * buffer, Simulation * simulation, size_t steps);

@@ -1,17 +1,19 @@
 #ifndef N_BODY_SIMULATION_SIMULATION_H
 #define N_BODY_SIMULATION_SIMULATION_H
 
-#include "models/Body.hpp"
+#include "../models/Body.hpp"
 
 
 class Simulation {
 public:
+    virtual ~Simulation() = default;
+
     Simulation(const float timeStep, const std::vector<Body>& bodies)
         : timeStep(timeStep), bodies(bodies) {}
 
-    std::vector<Body> calculateNextTick();
+    virtual std::vector<Body> calculateNextTick() = 0;
 
-private:
+protected:
     const float timeStep;
     std::vector<Body> bodies;
 };

@@ -1,10 +1,8 @@
-#include <iostream>
-
 #include "generateBodies.h"
-#include "OpenGLFrameworkException.hpp"
 #include "runSimulation.hpp"
-#include "Simulation.hpp"
+#include "../include/simulations/Simulation.hpp"
 #include "rendering/Renderer.hpp"
+#include "simulations/SequentialSimulation.hpp"
 
 int main() {
     const auto bodies = generateBodies(
@@ -19,7 +17,7 @@ int main() {
             Body(1.0f, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}),
         });
 
-    const auto simulation = new Simulation(1.0f, bodies);
+    const auto simulation = new SequentialSimulation(1.0f, bodies);
 
     std::vector<std::vector<Body>> simulationResults = {};
 
