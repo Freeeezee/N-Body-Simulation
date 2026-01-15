@@ -5,10 +5,9 @@
 #include "Simulation.hpp"
 #include "rendering/Renderer.hpp"
 
-int main()
-{
+int main() {
     const auto bodies = generateBodies(
-        500,
+        1000,
         1.0f,
         1.0f,
         {-200.0f, -200.0f, -200.0f},
@@ -16,29 +15,18 @@ int main()
         {-1.0f, -1.0f, -1.0f},
         {1.0f, 1.0f, 1.0f},
         {
-            Body(1000000.0f, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}),
+            Body(1.0f, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}),
         });
 
-    const auto simulation = new Simulation(1, bodies);
+    const auto simulation = new Simulation(1.0f, bodies);
 
-    try
-    {
+    try {
         const auto renderer = new Renderer();
 
-        auto calculatedBodies = simulation->calculateNextTick();
-
-        auto calculatedBodiesPtr = std::make_shared<decltype(calculatedBodies)>(calculatedBodies);
-        renderer->setSpacebarHandler([simulation, calculatedBodiesPtr] {
-            *calculatedBodiesPtr = simulation->calculateNextTick();
-        });
-
-        while( renderer->isWindowOpen() )
-        {
-            renderer->Draw(*calculatedBodiesPtr);
+        while (renderer->isWindowOpen()) {
+            renderer->Draw(simulation->calculateNextTick());
         }
-    }
-    catch( OpenGLFrameworkException& exception )
-    {
+    } catch (OpenGLFrameworkException &exception) {
         std::cerr << exception.what() << std::endl;
     }
 }

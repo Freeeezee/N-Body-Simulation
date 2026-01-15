@@ -4,7 +4,7 @@
 
 #include "glm/ext/quaternion_geometric.hpp"
 
-float G = 6.67430e-11f; // Gravitational constant
+float G = 1.0f; // Gravitational constant
 
 std::vector<Body> Simulation::calculateNextTick() {
 	std::vector<Body> newBodies;
@@ -19,17 +19,17 @@ std::vector<Body> Simulation::calculateNextTick() {
 		glm::vec3 totalAcceleration(0.0f);
 		for (const auto& otherBody : bodies) {
 			if (&body != &otherBody) {
-				glm::vec3 direction = body.position - otherBody.position;
+				glm::vec3 direction = otherBody.position - body.position;
 				const float distanceSquared = glm::dot(direction, direction) + 1e-12f; // Avoid division by zero
 				const float forceMagnitude = (G * otherBody.mass) / distanceSquared;
 				const glm::vec3 acceleration = forceMagnitude * glm::normalize(direction);
 				totalAcceleration += acceleration;
 			}
 		}
-		
+
 		// Update velocity based on acceleration
 		newBody.velocity += totalAcceleration * timeStep;
-		
+
 		newBodies.push_back(newBody);
 	}
 
