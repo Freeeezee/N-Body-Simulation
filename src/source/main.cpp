@@ -171,7 +171,6 @@ int main( int _argc, char ** _argv )
             // View Matrix: Move camera back 15 units, rotate around Y
             glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, -15.0f));
             view = glm::rotate(view, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-            view = glm::rotate(view, glm::radians(20.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Tilt down slightly
 
             // Projection Matrix (Assuming your shader multiplies MVP)
             // Note: If you don't have a projection matrix, the 'view' acts as the ModelView
