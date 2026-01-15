@@ -15,7 +15,9 @@ public:
     Renderer();
 
     void Draw(const std::vector<Body> &bodies) const;
+
     [[nodiscard]] bool isWindowOpen() const { return window->isOpen(); }
+    void setSpacebarHandler(std::function<void()> _handler) const;
 
 private:
     Window * window;

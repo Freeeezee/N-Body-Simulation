@@ -25,9 +25,16 @@ int main()
     {
         const auto renderer = new Renderer();
 
+        auto calculatedBodies = simulation->calculateNextTick();
+
+        auto calculatedBodiesPtr = std::make_shared<decltype(calculatedBodies)>(calculatedBodies);
+        renderer->setSpacebarHandler([simulation, calculatedBodiesPtr] {
+            *calculatedBodiesPtr = simulation->calculateNextTick();
+        });
+
         while( renderer->isWindowOpen() )
         {
-            renderer->Draw(simulation->calculateNextTick());
+            renderer->Draw(*calculatedBodiesPtr);
         }
     }
     catch( OpenGLFrameworkException& exception )

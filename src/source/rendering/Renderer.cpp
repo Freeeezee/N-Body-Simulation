@@ -51,3 +51,7 @@ void Renderer::Draw(const std::vector<Body> &bodies) const {
 
     window->swapBuffer();
 }
+
+void Renderer::setSpacebarHandler(std::function<void()> _handler) const {
+    window->setSpacebarHandler(std::move(_handler));
+}
