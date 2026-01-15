@@ -52,9 +52,9 @@ std::pair<std::vector<GLfloat>, std::vector<GLfloat>> generateAxes() {
     std::vector<GLfloat> mesh;
     std::vector<GLfloat> colors;
 
-    // Dimensions for the axis lines (length 5.0, thickness 0.05)
-    float len = 5.0f;
-    float thk = 0.05f;
+    // Dimensions for the axis lines (length 50.0, thickness 0.5)
+    float len = 50.0f;
+    float thk = 0.5f;
 
     // X-Axis (Red) - Extends along X
     addBox(mesh, colors, glm::vec3(len/2.0f, 0.0f, 0.0f), glm::vec3(len/2.0f, thk, thk), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -139,15 +139,15 @@ int main( int _argc, char ** _argv )
         window->sendRenderData( axesVAO, axesData.first, axesData.second );
 
         // 2. Generate and Upload Sphere Data (A single sphere model)
-        auto sphereData = generateSphere(1.0f, 20, 20); // Radius 1.0
+        auto sphereData = generateSphere(15.0f, 20, 20); // Radius 15.0
         window->sendRenderData( sphereVAO, sphereData.first, sphereData.second );
 
         // 3. Define positions for our spheres in 3D space
         std::vector<glm::vec3> spherePositions = {
-            glm::vec3(2.0f, 2.0f, 0.0f),
-            glm::vec3(3.0f, 1.0f, 1.0f),
-            glm::vec3(-2.0f, 0.0f, -2.0f),
-            glm::vec3(0.0f, 3.0f, 0.0f)
+            glm::vec3(100.0f, 100.0f, 0.0f),
+            glm::vec3(140.0f, 40.0f, 60.0f),
+            glm::vec3(-100.0f, 0.0f, -100.0f),
+            glm::vec3(0.0f, 120.0f, 0.0f)
         };
 
         clock_t lastInterval = clock();
@@ -168,9 +168,9 @@ int main( int _argc, char ** _argv )
             lastInterval = now;
             rotationAngle += deltaTime * 30.0f; // Slower rotation
 
-            // View Matrix: Move camera back 15 units, rotate around Y
-            glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, -15.0f));
-            view = glm::rotate(view, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+            // View Matrix: Move camera back 0.5 units, rotate around Y
+            glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, -0.5f));
+            //view = glm::rotate(view, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
 
             // Projection Matrix (Assuming your shader multiplies MVP)
             // Note: If you don't have a projection matrix, the 'view' acts as the ModelView
