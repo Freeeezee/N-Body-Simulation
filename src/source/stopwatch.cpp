@@ -1,4 +1,4 @@
-#include "stopwatch.h"
+#include "stopwatch.hpp"
 #include <iostream>
 #include <chrono>
 

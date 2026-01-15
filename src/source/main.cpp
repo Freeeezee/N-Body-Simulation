@@ -2,6 +2,7 @@
 
 #include "generateBodies.h"
 #include "OpenGLFrameworkException.hpp"
+#include "runSimulation.hpp"
 #include "Simulation.hpp"
 #include "rendering/Renderer.hpp"
 
@@ -20,13 +21,9 @@ int main() {
 
     const auto simulation = new Simulation(1.0f, bodies);
 
-    try {
-        const auto renderer = new Renderer();
+    std::vector<std::vector<Body>> simulationResults = {};
 
-        while (renderer->isWindowOpen()) {
-            renderer->Draw(simulation->calculateNextTick());
-        }
-    } catch (OpenGLFrameworkException &exception) {
-        std::cerr << exception.what() << std::endl;
-    }
+    runSimulation(&simulationResults, simulation, 100);
+
+    playSimulationResults(&simulationResults);
 }
