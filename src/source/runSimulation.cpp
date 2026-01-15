@@ -1,0 +1,33 @@
+#include "runSimulation.hpp"
+
+#include <iostream>
+
+#include "OpenGLFrameworkException.hpp"
+#include "rendering/Renderer.hpp"
+
+void runSimulation(std::vector<std::vector<Body>> *buffer, Simulation *simulation, const size_t steps) {
+    std::cout << "Starting simulation with " << steps << " steps..." << std::endl;
+
+    for (size_t i = 0; i < steps; ++i) {
+        buffer->push_back(simulation->calculateNextTick());
+    }
+
+    std::cout << "Finished simulation" << std::endl;
+}
+
+void playSimulationResults(std::vector<std::vector<Body>> *buffer) {
+    std::cout << "Playing back simulation results..." << std::endl;
+
+    try {
+        const auto renderer = new Renderer();
+
+        for (const auto& bodies : *buffer) {
+            if (!renderer->isWindowOpen()) {
+                break;
+            }
+            renderer->Draw(bodies);
+        }
+    } catch (OpenGLFrameworkException &exception) {
+        std::cerr << exception.what() << std::endl;
+    }
+}
