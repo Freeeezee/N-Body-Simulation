@@ -745,3 +745,5 @@ FodyWeavers.xsd
 
 .idea
 /out/build/x64-Debug
+n_body_simulation.lnk
+CMakeSettings.json
