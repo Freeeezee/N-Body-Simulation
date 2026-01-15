@@ -33,5 +33,6 @@ std::vector<Body> OpenMpSimulation::calculateNextTick() {
         newBodies[i] = newBody;
     }
 
+    bodies = newBodies;
     return newBodies;
 }
