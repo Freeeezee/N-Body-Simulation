@@ -19,7 +19,7 @@ std::vector<Body> Simulation::calculateNextTick() {
 		glm::vec3 totalAcceleration(0.0f);
 		for (const auto& otherBody : bodies) {
 			if (&body != &otherBody) {
-				glm::vec3 direction = otherBody.position - body.position;
+				glm::vec3 direction = body.position - otherBody.position;
 				const float distanceSquared = glm::dot(direction, direction) + 1e-12f; // Avoid division by zero
 				const float forceMagnitude = (G * otherBody.mass) / distanceSquared;
 				const glm::vec3 acceleration = forceMagnitude * glm::normalize(direction);
