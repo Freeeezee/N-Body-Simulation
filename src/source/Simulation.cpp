@@ -1,4 +1,4 @@
-#include "../Simulation.hpp"
+#include "Simulation.hpp"
 
 std::vector<Body> Simulation::calculateNextTick() {
 
