@@ -1,14 +1,13 @@
 #include "simulations/SequentialSimulation.hpp"
 #include "simulations/Simulation.hpp"
-#include <iostream>
 
+#include "Constants.hpp"
 #include "glm/ext/quaternion_geometric.hpp"
 
 
-float G = 1.0f; // Gravitational constant
-
 std::vector<Body> SequentialSimulation::calculateNextTick() {
     std::vector<Body> newBodies;
+
     for (const auto& body : bodies) {
         Body newBody = body;
         // Update position based on velocity
@@ -21,7 +20,7 @@ std::vector<Body> SequentialSimulation::calculateNextTick() {
         for (const auto& otherBody : bodies) {
             if (&body != &otherBody) {
                 glm::vec3 direction = otherBody.position - body.position;
-                const float distanceSquared = glm::dot(direction, direction) + 1e-12f; // Avoid division by zero
+                const float distanceSquared = glm::dot(direction, direction) + DISTANCE_EPSILON; // Avoid division by zero
                 const float forceMagnitude = (G * otherBody.mass) / distanceSquared;
                 const glm::vec3 acceleration = forceMagnitude * glm::normalize(direction);
                 totalAcceleration += acceleration;

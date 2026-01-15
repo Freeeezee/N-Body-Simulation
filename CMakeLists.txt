@@ -4,8 +4,8 @@ project(n_body_simulation)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#set(OPENMP_INCLUDE_DIR /opt/homebrew/opt/libomp/include)
-#set(OPENMP_LIB_DIR /opt/homebrew/opt/libomp/lib)
+set(OPENMP_INCLUDE_DIR /opt/homebrew/opt/libomp/include)
+set(OPENMP_LIB_DIR /opt/homebrew/opt/libomp/lib)
 
 #find_package(OpenCL REQUIRED)
 find_package(OpenGL REQUIRED)
@@ -39,7 +39,7 @@ target_compile_options(n_body_simulation PRIVATE
 )
 
 target_link_directories(n_body_simulation PRIVATE ${OPENMP_LIB_DIR})
-#target_link_libraries(n_body_simulation PRIVATE omp)
+target_link_libraries(n_body_simulation PRIVATE omp)
 
 #target_link_libraries(n_body_simulation PRIVATE OpenCL::OpenCL)
 
