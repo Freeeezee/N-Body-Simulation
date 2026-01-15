@@ -12,7 +12,7 @@ Renderer::Renderer() {
     OpenGLFramework opengl( "shader/vertex.glsl", "shader/fragment.glsl" );
     opengl.initialize();
 
-    window = opengl.createWindow( "3D Axes and Spheres", 1024, 768 );
+    window = opengl.createWindow( "N-Body Simulation", 1024, 768 );
 
     axesVAO = window->createVAO();
     sphereVAO = window->createVAO();
@@ -20,7 +20,7 @@ Renderer::Renderer() {
     axesData = generateAxes();
     window->sendRenderData( axesVAO, axesData.first, axesData.second );
 
-    sphereData = generateSphere(15.0f, 20, 20);
+    sphereData = generateSphere(1.0f, 5, 5);
     window->sendRenderData( sphereVAO, sphereData.first, sphereData.second );
 
     std::vector spherePositions = {

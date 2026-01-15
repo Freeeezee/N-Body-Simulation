@@ -1,13 +1,18 @@
 #include <iostream>
+
+#include "generateBodies.h"
 #include "OpenGLFrameworkException.hpp"
 #include "Simulation.hpp"
 #include "rendering/Renderer.hpp"
 
 int main()
 {
-    const auto bodies = std::vector{
-        Body( 1, glm::vec3 { 0, 0, 1 }, glm::vec3 { 0, 0, 0 } ),
-    };
+    const auto bodies = generateBodies(
+        10000,
+        {-200.0f, -200.0f, -200.0f},
+        {200.0f, 200.0f, 200.0f},
+        {-1.0f, -1.0f, -1.0f},
+        {1.0f, 1.0f, 1.0f});
 
     const auto simulation = new Simulation(1, bodies);
 
