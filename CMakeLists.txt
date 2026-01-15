@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(OPENMP_INCLUDE_DIR /opt/homebrew/opt/libomp/include)
 set(OPENMP_LIB_DIR /opt/homebrew/opt/libomp/lib)
 
-find_package(OpenCL REQUIRED)
+#find_package(OpenCL REQUIRED)
 find_package(OpenGL REQUIRED)
 
 add_subdirectory(external/glfw)
@@ -41,6 +41,6 @@ target_compile_options(n_body_simulation PRIVATE
 target_link_directories(n_body_simulation PRIVATE ${OPENMP_LIB_DIR})
 target_link_libraries(n_body_simulation PRIVATE omp)
 
-target_link_libraries(n_body_simulation PRIVATE OpenCL::OpenCL)
+#target_link_libraries(n_body_simulation PRIVATE OpenCL::OpenCL)
 
 target_link_libraries(n_body_simulation PRIVATE glfw libglew_static glm)
