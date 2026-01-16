@@ -1,7 +1,7 @@
 #ifndef N_BODY_SIMULATION_SIMULATION_H
 #define N_BODY_SIMULATION_SIMULATION_H
 
-#include "../models/Body.hpp"
+#include "models/Body.hpp"
 
 
 class Simulation {
