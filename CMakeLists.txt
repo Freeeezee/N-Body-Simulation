@@ -4,7 +4,7 @@ project(n_body_simulation LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#find_package(OpenCL REQUIRED)
+find_package(OpenCL REQUIRED)
 find_package(OpenGL REQUIRED)
 
 if (APPLE)
@@ -38,6 +38,19 @@ else()
     message(WARNING "Shader directory not found at: ${CMAKE_SOURCE_DIR}/src/shader")
 endif()
 
+if(EXISTS "${CMAKE_SOURCE_DIR}/src/kernels")
+    add_custom_command(TARGET n_body_simulation POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:n_body_simulation>/kernels"
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CMAKE_SOURCE_DIR}/src/kernels"
+            "$<TARGET_FILE_DIR:n_body_simulation>/kernels"
+            COMMENT "Copying kernel files to build directory"
+            VERBATIM
+    )
+else()
+    message(WARNING "Kernel directory not found at: ${CMAKE_SOURCE_DIR}/src/kernels")
+endif()
+
 target_include_directories(n_body_simulation PRIVATE
         src/source
         src/source/opengl-framework
@@ -57,6 +70,6 @@ else ()
     target_link_libraries(n_body_simulation PRIVATE OpenMP::OpenMP_CXX)
 endif ()
 
-#target_link_libraries(n_body_simulation PRIVATE OpenCL::OpenCL)
+target_link_libraries(n_body_simulation PRIVATE OpenCL::OpenCL)
 
 target_link_libraries(n_body_simulation PRIVATE glfw libglew_static glm)
