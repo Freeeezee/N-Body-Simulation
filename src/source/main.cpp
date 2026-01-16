@@ -6,7 +6,7 @@
 
 int main() {
     const auto bodies = generateBodies(
-        500,
+        1000,
         1.0f,
         1.0f,
         {-200.0f, -200.0f, -200.0f},
@@ -21,7 +21,7 @@ int main() {
 
     std::vector<std::vector<Body>> simulationResults = {};
 
-    runSimulation(&simulationResults, simulation, 1000);
+    runSimulation(&simulationResults, simulation, 750);
 
     playSimulationResults(&simulationResults);
 }
