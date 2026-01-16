@@ -10,7 +10,7 @@ set(OPENMP_LIB_DIR /opt/homebrew/opt/libomp/lib)
 #find_package(OpenCL REQUIRED)
 find_package(OpenGL REQUIRED)
 
-find_package(OpenMP REQUIRED)
+find_package(OpenMP REQUIRED COMPONENTS CXX)
 
 add_subdirectory(external/glfw)
 
