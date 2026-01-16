@@ -21,55 +21,58 @@ add_subdirectory(external/glew)
 add_subdirectory(external/glm)
 
 file(GLOB_RECURSE SOURCES src/source/*.cpp)
+list(REMOVE_ITEM SOURCES ${CMAKE_SOURCE_DIR}/src/source/main.cpp)
+list(REMOVE_ITEM SOURCES ${CMAKE_SOURCE_DIR}/src/source/main-mpi.cpp)
 
-add_executable(n_body_simulation ${SOURCES})
-
-# Ensure shader directory exists before copying
-if(EXISTS "${CMAKE_SOURCE_DIR}/src/shader")
-    add_custom_command(TARGET n_body_simulation POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:n_body_simulation>/shader"
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_SOURCE_DIR}/src/shader"
-            "$<TARGET_FILE_DIR:n_body_simulation>/shader"
-            COMMENT "Copying shader files to build directory"
-            VERBATIM
-    )
-else()
-    message(WARNING "Shader directory not found at: ${CMAKE_SOURCE_DIR}/src/shader")
-endif()
-
-if(EXISTS "${CMAKE_SOURCE_DIR}/src/kernels")
-    add_custom_command(TARGET n_body_simulation POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:n_body_simulation>/kernels"
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_SOURCE_DIR}/src/kernels"
-            "$<TARGET_FILE_DIR:n_body_simulation>/kernels"
-            COMMENT "Copying kernel files to build directory"
-            VERBATIM
-    )
-else()
-    message(WARNING "Kernel directory not found at: ${CMAKE_SOURCE_DIR}/src/kernels")
-endif()
-
-target_include_directories(n_body_simulation PRIVATE
-        src/source
-        src/source/opengl-framework
-        src/include
-        src/include/opengl-framework
+add_executable(n_body_simulation
+        src/source/main.cpp
+        ${SOURCES}
 )
 
-target_compile_options(n_body_simulation PRIVATE
-        -Xpreprocessor -fopenmp
-        -I${OPENMP_INCLUDE_DIR}
+add_executable(n_body_simulation_mpi
+        src/source/main-mpi.cpp
+        ${SOURCES}
 )
 
-if (APPLE)
-    target_link_directories(n_body_simulation PRIVATE ${OPENMP_LIB_DIR})
-    target_link_libraries(n_body_simulation PRIVATE omp)
-else ()
-    target_link_libraries(n_body_simulation PRIVATE OpenMP::OpenMP_CXX)
-endif ()
+function(configure_nbody_target target)
+    target_include_directories(${target} PRIVATE
+            src/source
+            src/source/opengl-framework
+            src/include
+            src/include/opengl-framework
+    )
 
-target_link_libraries(n_body_simulation PRIVATE OpenCL::OpenCL)
+    target_compile_options(${target} PRIVATE
+            -Xpreprocessor -fopenmp
+            -I${OPENMP_INCLUDE_DIR}
+    )
 
-target_link_libraries(n_body_simulation PRIVATE glfw libglew_static glm)
+    if (APPLE)
+        target_link_directories(${target} PRIVATE ${OPENMP_LIB_DIR})
+        target_link_libraries(${target} PRIVATE omp)
+    else ()
+        target_link_libraries(${target} PRIVATE OpenMP::OpenMP_CXX)
+    endif ()
+
+    target_link_libraries(${target} PRIVATE
+            OpenCL::OpenCL
+            glfw
+            libglew_static
+            glm
+    )
+
+    add_custom_command(TARGET ${target} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/src/shader
+            $<TARGET_FILE_DIR:${target}>/shader
+    )
+
+    add_custom_command(TARGET ${target} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/src/kernels
+            $<TARGET_FILE_DIR:${target}>/kernels
+    )
+endfunction()
+
+configure_nbody_target(n_body_simulation)
+configure_nbody_target(n_body_simulation_mpi)

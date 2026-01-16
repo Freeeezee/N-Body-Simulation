@@ -1,6 +1,5 @@
 #include "generateBodies.h"
 #include "runSimulation.hpp"
-#include "../include/simulations/Simulation.hpp"
 #include "rendering/Renderer.hpp"
 #include "simulations/OpenClSimulation.hpp"
 #include "simulations/OpenMpSimulation.hpp"
