@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(OpenCL REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(MPI REQUIRED)
 
 if (APPLE)
     set(OPENMP_INCLUDE_DIR /opt/homebrew/opt/libomp/include)
@@ -23,6 +24,7 @@ add_subdirectory(external/glm)
 file(GLOB_RECURSE SOURCES src/source/*.cpp)
 list(REMOVE_ITEM SOURCES ${CMAKE_SOURCE_DIR}/src/source/main.cpp)
 list(REMOVE_ITEM SOURCES ${CMAKE_SOURCE_DIR}/src/source/main-mpi.cpp)
+list(REMOVE_ITEM SOURCES ${CMAKE_SOURCE_DIR}/src/source/main-body-gen.cpp)
 
 add_executable(n_body_simulation
         src/source/main.cpp
@@ -31,6 +33,11 @@ add_executable(n_body_simulation
 
 add_executable(n_body_simulation_mpi
         src/source/main-mpi.cpp
+        ${SOURCES}
+)
+
+add_executable(n_body_simulation_body_gen
+        src/source/main-body-gen.cpp
         ${SOURCES}
 )
 
@@ -59,6 +66,7 @@ function(configure_nbody_target target)
             glfw
             libglew_static
             glm
+            MPI::MPI_CXX
     )
 
     add_custom_command(TARGET ${target} POST_BUILD
@@ -76,3 +84,4 @@ endfunction()
 
 configure_nbody_target(n_body_simulation)
 configure_nbody_target(n_body_simulation_mpi)
+configure_nbody_target(n_body_simulation_body_gen)

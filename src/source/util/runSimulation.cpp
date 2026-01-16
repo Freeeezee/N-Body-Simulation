@@ -1,9 +1,9 @@
-#include "runSimulation.hpp"
+#include "util/runSimulation.hpp"
 
 #include <iostream>
 
 #include "OpenGLFrameworkException.hpp"
-#include "stopwatch.hpp"
+#include "util/stopwatch.hpp"
 #include "rendering/Renderer.hpp"
 
 void runSimulation(std::vector<std::vector<Body>> *buffer, Simulation *simulation, const size_t steps) {

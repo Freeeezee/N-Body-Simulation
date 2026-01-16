@@ -2,7 +2,7 @@
 #define N_BODY_SIMULATION_GENERATEBODIES_H
 #include <vector>
 
-#include "models/Body.hpp"
+#include "../models/Body.hpp"
 
 std::vector<Body> generateBodies(
     int number,
