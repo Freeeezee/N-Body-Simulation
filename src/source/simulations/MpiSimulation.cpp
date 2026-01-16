@@ -16,14 +16,14 @@ std::vector<Body> MpiSimulation::calculateNextTick() {
 
     const int chunkSize = n / worldSize;
     const int startIndex = worldRank * chunkSize;
-    const int endIndex = (worldRank == worldSize - 1) ? n : startIndex + chunkSize;
+    const int endIndex = worldRank == worldSize - 1 ? n : startIndex + chunkSize;
     const int localCount = endIndex - startIndex;
 
     std::vector<Body> localNextBodies(localCount);
 
     #pragma omp parallel for schedule(dynamic)
     for (int i = startIndex; i < endIndex; ++i) {
-        int local_i = i - startIndex;
+        const int localI = i - startIndex;
         const glm::vec3 pos = bodies[i].position;
         glm::vec3 vel = bodies[i].velocity;
         glm::vec3 totalAcceleration(0.0f);
@@ -39,9 +39,9 @@ std::vector<Body> MpiSimulation::calculateNextTick() {
         }
 
         vel += totalAcceleration * timeStep;
-        localNextBodies[local_i].position = pos + vel * timeStep;
-        localNextBodies[local_i].velocity = vel;
-        localNextBodies[local_i].mass = bodies[i].mass;
+        localNextBodies[localI].position = pos + vel * timeStep;
+        localNextBodies[localI].velocity = vel;
+        localNextBodies[localI].mass = bodies[i].mass;
     }
 
     std::vector<int> receivedCounts(worldSize);
