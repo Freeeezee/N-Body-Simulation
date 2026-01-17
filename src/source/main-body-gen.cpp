@@ -1,4 +1,4 @@
-#include "util/generateBodies.h"
+#include "util/bodies.h"
 #include "models/Body.hpp"
 #include "util/fileUtil.hpp"
 #include "util/serializeString.hpp"

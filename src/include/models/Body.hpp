@@ -17,4 +17,10 @@ public:
         : mass(mass), position(position), velocity(velocity) {}
 };
 
+struct BodiesSoA {
+    std::vector<glm::vec3> positions;
+    std::vector<glm::vec3> velocities;
+    std::vector<float> masses;
+};
+
 #endif //N_BODY_SIMULATION_BODY_H

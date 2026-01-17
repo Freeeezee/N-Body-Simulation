@@ -2,12 +2,12 @@
 #define N_BODY_SIMULATION_OPENMPSIMULATION_HPP
 #include "Simulation.hpp"
 
-class OpenMpSimulation : public Simulation {
+class OpenMpSimulation : public SimulationSoA {
 public:
     OpenMpSimulation(const float timeStep, const std::vector<Body>& bodies)
-        : Simulation(timeStep, bodies) {}
+        : SimulationSoA(timeStep, bodies) {}
 
-    std::vector<Body> calculateNextTick() override;
+    BodiesSoA calculateNextTick() override;
 };
 
 #endif //N_BODY_SIMULATION_OPENMPSIMULATION_HPP

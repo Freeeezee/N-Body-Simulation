@@ -1,4 +1,4 @@
-#include "util/generateBodies.h"
+#include "util/bodies.h"
 #include "util/runSimulation.hpp"
 #include "rendering/Renderer.hpp"
 #include "simulations/OpenClSimulation.hpp"
@@ -7,7 +7,7 @@
 
 int main() {
     const auto bodies = generateBodies(
-        1000,
+        750,
         1.0f,
         1.0f,
         {-200.0f, -200.0f, -200.0f},
@@ -18,11 +18,12 @@ int main() {
             Body(1.0f, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}),
         });
 
-    const auto simulation = new OpenMpSingleLoopSimulation(1.0f, bodies);
+    const auto simulation = new OpenMpSimulation(1.0f, bodies);
 
-    std::vector<std::vector<Body>> simulationResults = {};
+    //std::vector<std::vector<Body>> simulationResults = {};
+    std::vector<BodiesSoA> simulationResults = {};
 
-    runSimulation(&simulationResults, simulation, 750);
+    runSimulation(&simulationResults, simulation, 500);
 
     playSimulationResults(&simulationResults);
 }

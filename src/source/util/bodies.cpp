@@ -1,4 +1,4 @@
-#include "util/generateBodies.h"
+#include "util/bodies.h"
 #include <random>
 
 std::vector<Body> generateBodies(
@@ -60,3 +60,32 @@ std::vector<Body> generateBodies(
 
     return bodies;
 }
+
+BodiesSoA convertBodiesToSoA(const std::vector<Body> &bodies) {
+    const size_t n = bodies.size();
+    BodiesSoA soa;
+    soa.positions.reserve(n);
+    soa.velocities.reserve(n);
+    soa.masses.reserve(n);
+
+    for (const auto& body : bodies) {
+        soa.positions.push_back(body.position);
+        soa.velocities.push_back(body.velocity);
+        soa.masses.push_back(body.mass);
+    }
+
+    return soa;
+}
+
+std::vector<Body> convertSoAToBodies(const BodiesSoA &soa) {
+    const size_t n = soa.masses.size();
+    std::vector<Body> bodies;
+    bodies.reserve(n);
+
+    for (size_t i = 0; i < n; ++i) {
+        bodies.emplace_back(soa.masses[i], soa.positions[i], soa.velocities[i]);
+    }
+
+    return bodies;
+}
+
