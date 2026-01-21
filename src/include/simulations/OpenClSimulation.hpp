@@ -8,23 +8,35 @@
 #include <CL/cl.h>
 #endif
 
-class OpenClSimulation : public Simulation {
+class OpenClSimulation : public SimulationSoA {
 public:
     OpenClSimulation(float timeStep, const std::vector<Body>& bodies);
-    ~OpenClSimulation();
-    std::vector<Body> calculateNextTick() override;
+    ~OpenClSimulation() override;
+    BodiesSoA calculateNextTick() override;
 
 private:
-    cl_device_id device_id{};
+    cl_device_id deviceId{};
     cl_context context{};
     cl_command_queue queue{};
     cl_program program{};
     cl_kernel kernel{};
 
-    cl_mem bufPosMass{};
-    cl_mem bufVel{};
-    cl_mem bufNewPos{};
-    cl_mem bufNewVel{};
+    cl_mem bufPosX{};
+    cl_mem bufPosY{};
+    cl_mem bufPosZ{};
+    cl_mem bufMass{};
+
+    cl_mem bufVelX{};
+    cl_mem bufVelY{};
+    cl_mem bufVelZ{};
+
+    cl_mem bufNewPosX{};
+    cl_mem bufNewPosY{};
+    cl_mem bufNewPosZ{};
+
+    cl_mem bufNewVelX{};
+    cl_mem bufNewVelY{};
+    cl_mem bufNewVelZ{};
 
     void initOpenCL();
     void updateBuffers();

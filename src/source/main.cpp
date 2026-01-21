@@ -7,7 +7,7 @@
 
 int main() {
     const auto bodies = generateBodies(
-        750,
+        10000,
         1.0f,
         1.0f,
         {-200.0f, -200.0f, -200.0f},
@@ -18,12 +18,12 @@ int main() {
             Body(1.0f, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}),
         });
 
-    const auto simulation = new OpenMpSimulation(1.0f, bodies);
+    const auto simulation = new OpenClSimulation(1.0f, bodies);
 
     //std::vector<std::vector<Body>> simulationResults = {};
     std::vector<BodiesSoA> simulationResults = {};
 
-    runSimulation(&simulationResults, simulation, 500);
+    runSimulation(&simulationResults, simulation, 750);
 
     playSimulationResults(&simulationResults);
 }
