@@ -8,4 +8,6 @@ bool saveToFile(std::string_view filename, std::string_view content);
 
 std::string loadFromFile(std::string_view filename);
 
+bool fileExists(const std::string& filename);
+
 #endif //N_BODY_SIMULATION_FILEUTIL_HPP

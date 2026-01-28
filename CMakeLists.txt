@@ -25,6 +25,7 @@ file(GLOB_RECURSE SOURCES src/source/*.cpp)
 list(REMOVE_ITEM SOURCES ${CMAKE_SOURCE_DIR}/src/source/main.cpp)
 list(REMOVE_ITEM SOURCES ${CMAKE_SOURCE_DIR}/src/source/main-mpi.cpp)
 list(REMOVE_ITEM SOURCES ${CMAKE_SOURCE_DIR}/src/source/main-body-gen.cpp)
+list(REMOVE_ITEM SOURCES ${CMAKE_SOURCE_DIR}/src/source/main-test.cpp)
 
 add_executable(n_body_simulation
         src/source/main.cpp
@@ -38,6 +39,11 @@ add_executable(n_body_simulation_mpi
 
 add_executable(n_body_simulation_body_gen
         src/source/main-body-gen.cpp
+        ${SOURCES}
+)
+
+add_executable(n_body_simulation_test
+        src/source/main-test.cpp
         ${SOURCES}
 )
 
@@ -85,3 +91,4 @@ endfunction()
 configure_nbody_target(n_body_simulation)
 configure_nbody_target(n_body_simulation_mpi)
 configure_nbody_target(n_body_simulation_body_gen)
+configure_nbody_target(n_body_simulation_test)

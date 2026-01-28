@@ -349,6 +349,8 @@ TSWLatexianTemp*
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+build_vs2026
+
 # User-specific files
 *.rsuser
 *.suo

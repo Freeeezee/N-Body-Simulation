@@ -1,8 +1,9 @@
 #include "util/fileUtil.hpp"
+#include <filesystem>
 #include <fstream>
 #include <sstream>
 
-bool saveToFile(std::string_view filename, std::string_view content) {
+bool saveToFile(const std::string_view filename, const std::string_view content) {
     std::ofstream outFile((std::string(filename)));
     if (!outFile) {
         return false;
@@ -11,8 +12,8 @@ bool saveToFile(std::string_view filename, std::string_view content) {
     return true;
 }
 
-std::string loadFromFile(std::string_view filename) {
-    std::ifstream inFile((std::string(filename)));
+std::string loadFromFile(const std::string_view filename) {
+    const std::ifstream inFile((std::string(filename)));
     if (!inFile) {
         return "";
     }
@@ -20,4 +21,8 @@ std::string loadFromFile(std::string_view filename) {
     std::stringstream buffer;
     buffer << inFile.rdbuf();
     return buffer.str();
+}
+
+bool fileExists(const std::string& filename) {
+    return std::filesystem::exists(filename);
 }
