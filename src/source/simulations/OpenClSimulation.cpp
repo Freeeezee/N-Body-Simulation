@@ -2,6 +2,7 @@
 #include "Constants.hpp"
 #include <fstream>
 #include <vector>
+#include <iostream>
 
 OpenClSimulation::OpenClSimulation(const float timeStep, const std::vector<Body> &bodies)
     : SimulationSoA(timeStep, bodies) {
@@ -25,7 +26,24 @@ void OpenClSimulation::initOpenCL() {
     const size_t srcSize = src.length();
 
     program = clCreateProgramWithSource(context, 1, &srcPtr, &srcSize, nullptr);
-    clBuildProgram(program, 1, &deviceId, nullptr, nullptr, nullptr);
+
+    const auto buildOptions =
+        "-cl-std=CL1.2 "
+        "-cl-fp32-correctly-rounded-divide-sqrt";
+
+    if (const cl_int buildErr = clBuildProgram(program, 1, &deviceId, buildOptions, nullptr, nullptr);
+        buildErr != CL_SUCCESS) {
+        size_t logSize = 0;
+        clGetProgramBuildInfo(program, deviceId, CL_PROGRAM_BUILD_LOG, 0, nullptr, &logSize);
+
+        std::string log(logSize, '\0');
+        clGetProgramBuildInfo(program, deviceId, CL_PROGRAM_BUILD_LOG, logSize, log.data(), nullptr);
+
+        std::cerr << "OpenCL build failed (" << buildErr << ")\n";
+        std::cerr << "Build log:\n" << log << "\n";
+        throw std::runtime_error("clBuildProgram failed");
+    }
+
     kernel = clCreateKernel(program, "calculate_forces", nullptr);
 
     const size_t n = bodies.masses.size();

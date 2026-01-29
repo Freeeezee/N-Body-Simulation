@@ -32,13 +32,13 @@ public:
 
     // Register a simulation implementation (SoA style)
     template <typename T>
-    void registerSoASimulation(const std::string& name) {
+    void registerSoASimulation(const std::string& name, bool isBaseline = false) {
         configs.push_back({
             name,
             [this](const std::vector<Body>& b) {
                 return new SoARunner(new T(this->timeStep, b));
             },
-            false
+            isBaseline
         });
     }
 

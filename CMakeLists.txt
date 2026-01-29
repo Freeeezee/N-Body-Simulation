@@ -75,17 +75,17 @@ function(configure_nbody_target target)
             MPI::MPI_CXX
     )
 
-    add_custom_command(TARGET ${target} POST_BUILD
+    add_custom_target(copy_runtime_assets_${target} ALL
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_SOURCE_DIR}/src/shader
             $<TARGET_FILE_DIR:${target}>/shader
-    )
-
-    add_custom_command(TARGET ${target} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_SOURCE_DIR}/src/kernels
             $<TARGET_FILE_DIR:${target}>/kernels
+            VERBATIM
     )
+
+    add_dependencies(${target} copy_runtime_assets_${target})
 endfunction()
 
 configure_nbody_target(n_body_simulation)
