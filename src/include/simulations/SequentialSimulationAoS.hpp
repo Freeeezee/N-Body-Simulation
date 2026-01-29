@@ -3,9 +3,9 @@
 #include "Simulation.hpp"
 
 
-class SequentialSimulation : public Simulation {
+class SequentialSimulationAoS : public Simulation {
 public:
-    SequentialSimulation(const float timeStep, const std::vector<Body>& bodies)
+    SequentialSimulationAoS(const float timeStep, const std::vector<Body>& bodies)
         : Simulation(timeStep, bodies) {}
 
     std::vector<Body> calculateNextTick() override;

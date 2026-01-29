@@ -28,8 +28,9 @@ void OpenClSimulationSoA2::initOpenCL() {
     program = clCreateProgramWithSource(context, 1, &srcPtr, &srcSize, nullptr);
 
     const auto buildOptions =
-        "-cl-std=CL1.2 "
-        "-cl-fp32-correctly-rounded-divide-sqrt";
+        //"-cl-std=CL1.2 "
+        //"-cl-fp32-correctly-rounded-divide-sqrt"
+        "";
 
     if (const cl_int buildErr = clBuildProgram(program, 1, &deviceId, buildOptions, nullptr, nullptr);
         buildErr != CL_SUCCESS) {
