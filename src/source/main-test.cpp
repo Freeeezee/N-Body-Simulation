@@ -1,4 +1,4 @@
-#include "../include/simulations/OpenClSimulation.hpp"
+#include "../include/simulations/OpenClSimulationSoA.hpp"
 #include "../include/simulations/SequentialSimulation.hpp"
 #include "../include/util/TestSuite.hpp"
 #include "util/fileUtil.hpp"
@@ -8,7 +8,10 @@
 #include <iostream>
 
 #include "simulations/MpiSimulation.hpp"
-#include "simulations/OpenMpSimulation.hpp"
+#include "simulations/OpenClSimulationAoS.hpp"
+#include "simulations/OpenClSimulationSoA.hpp"
+#include "simulations/OpenMpSimulationAoS.hpp"
+#include "simulations/OpenMpSimulationSoA.hpp"
 #include "simulations/OpenMpSingleLoopSimulation.hpp"
 
 
@@ -48,16 +51,16 @@ void generateTestSets(const std::vector<int> &testCounts) {
         );
 
         auto serialized = serializeStringBodies(&bodies);
-        saveToFile(filename.c_str(), serialized);
+        saveToFile(filename, serialized);
 
         std::cout << "Saved to " << filename << std::endl;
     }
 }
 
 int main(int argc, char** argv) {
-    const std::vector bodyCounts = { 2, 3, 10, 50, 100, 500, 1000, 5000, 10000 };
-    const std::vector testStepCounts = { 10, 50, 100, 500, 1000, 5000 };
-    constexpr int repetitions = 5;
+    const std::vector bodyCounts = { 100, 1000 };
+    const std::vector testStepCounts = { 100, 500 };
+    constexpr int repetitions = 3;
 
     generateTestSets(bodyCounts);
 
@@ -65,8 +68,10 @@ int main(int argc, char** argv) {
         std::string filename = "generated_bodies" + std::to_string(count) + ".txt";
         TestSuite suite(filename, 1.0f);
         suite.registerSimulation<SequentialSimulation>("Sequential_Baseline", true);
-        suite.registerSoASimulation<OpenClSimulation>("OpenClSimulation");
-        suite.registerSoASimulation<OpenMpSimulation>("OpenMpSimulation");
+        suite.registerSoASimulation<OpenClSimulationSoA>("OpenClSimulationSoA");
+        suite.registerSoASimulation<OpenMpSimulationSoA>("OpenMpSimulationSoA");
+        suite.registerSimulation<OpenMpSimulationAoS>("OpenMpSimulationAoS");
+        suite.registerSimulation<OpenClSimulationAoS>("OpenClSimulationAoS");
         //suite.registerSimulation<OpenMpSingleLoopSimulation>("OpenMpSingleLoopSimulation");
         //suite.registerSimulation<MpiSimulation>("MpiSimulation");
         for (const int stepCount : testStepCounts) {

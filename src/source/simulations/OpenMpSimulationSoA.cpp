@@ -1,9 +1,9 @@
-#include "simulations/OpenMpSimulation.hpp"
+#include "simulations/OpenMpSimulationSoA.hpp"
 #include "glm/ext/quaternion_geometric.hpp"
 #include "Constants.hpp"
 
 
-BodiesSoA OpenMpSimulation::calculateNextTick() {
+BodiesSoA OpenMpSimulationSoA::calculateNextTick() {
     const size_t n = bodies.masses.size();
     BodiesSoA nextState;
     nextState.positions.resize(n);

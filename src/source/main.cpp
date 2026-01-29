@@ -1,8 +1,8 @@
 #include "util/bodies.h"
 #include "util/runSimulation.hpp"
 #include "rendering/Renderer.hpp"
-#include "simulations/OpenClSimulation.hpp"
-#include "simulations/OpenMpSimulation.hpp"
+#include "simulations/OpenClSimulationSoA.hpp"
+#include "simulations/OpenMpSimulationSoA.hpp"
 #include "simulations/OpenMpSingleLoopSimulation.hpp"
 
 int main() {
@@ -18,7 +18,7 @@ int main() {
             Body(1.0f, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}),
         });
 
-    const auto simulation = new OpenClSimulation(1.0f, bodies);
+    const auto simulation = new OpenClSimulationSoA(1.0f, bodies);
 
     //std::vector<std::vector<Body>> simulationResults = {};
     std::vector<BodiesSoA> simulationResults = {};
