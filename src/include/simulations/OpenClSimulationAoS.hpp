@@ -15,7 +15,7 @@ public:
     std::vector<Body> calculateNextTick() override;
 
 private:
-    cl_device_id device_id{};
+    cl_device_id deviceId{};
     cl_context context{};
     cl_command_queue queue{};
     cl_program program{};
