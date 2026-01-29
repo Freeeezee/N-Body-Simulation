@@ -17,9 +17,22 @@ public:
         : mass(mass), position(position), velocity(velocity) {}
 };
 
-struct BodiesSoA {
+struct BodiesSoA1 {
     std::vector<glm::vec3> positions;
     std::vector<glm::vec3> velocities;
+
+    std::vector<float> masses;
+};
+
+struct BodiesSoA2 {
+    std::vector<float> posX;
+    std::vector<float> posY;
+    std::vector<float> posZ;
+
+    std::vector<float> velX;
+    std::vector<float> velY;
+    std::vector<float> velZ;
+
     std::vector<float> masses;
 };
 

@@ -1,16 +1,16 @@
-#include "simulations/OpenMpSimulationSoA.hpp"
+#include "simulations/OpenMpSimulationSoA1.hpp"
 #include "glm/ext/quaternion_geometric.hpp"
 #include "Constants.hpp"
 
 
-BodiesSoA OpenMpSimulationSoA::calculateNextTick() {
+BodiesSoA1 OpenMpSimulationSoA1::calculateNextTick() {
     const size_t n = bodies.masses.size();
-    BodiesSoA nextState;
+    BodiesSoA1 nextState;
     nextState.positions.resize(n);
     nextState.velocities.resize(n);
     nextState.masses = bodies.masses;
 
-    #pragma omp parallel for schedule(static)
+#pragma omp parallel for schedule(static)
     for (int i = 0; i < n; ++i) {
         const glm::vec3 pos = bodies.positions[i];
         glm::vec3 vel = bodies.velocities[i];

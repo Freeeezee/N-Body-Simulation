@@ -25,8 +25,10 @@ std::vector<Body> generateBodies(
     std::vector<Body> alwaysInclude
 );
 
-BodiesSoA convertBodiesToSoA(const std::vector<Body>& bodies);
+BodiesSoA1 convertBodiesToSoA1(const std::vector<Body>& bodies);
+BodiesSoA2 convertBodiesToSoA2(const std::vector<Body>& bodies);
 
-std::vector<Body> convertSoAToBodies(const BodiesSoA& soa);
+std::vector<Body> convertSoA1ToBodies(const BodiesSoA1& soa);
+std::vector<Body> convertSoA2ToBodies(const BodiesSoA2& soa);
 
 #endif //N_BODY_SIMULATION_GENERATEBODIES_H

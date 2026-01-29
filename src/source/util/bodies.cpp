@@ -61,9 +61,9 @@ std::vector<Body> generateBodies(
     return bodies;
 }
 
-BodiesSoA convertBodiesToSoA(const std::vector<Body> &bodies) {
+BodiesSoA1 convertBodiesToSoA1(const std::vector<Body> &bodies) {
     const size_t n = bodies.size();
-    BodiesSoA soa;
+    BodiesSoA1 soa;
     soa.positions.reserve(n);
     soa.velocities.reserve(n);
     soa.masses.reserve(n);
@@ -77,13 +77,58 @@ BodiesSoA convertBodiesToSoA(const std::vector<Body> &bodies) {
     return soa;
 }
 
-std::vector<Body> convertSoAToBodies(const BodiesSoA &soa) {
+BodiesSoA2 convertBodiesToSoA2(const std::vector<Body> &bodies) {
+    const size_t n = bodies.size();
+    BodiesSoA2 soa;
+
+    soa.posX.resize(n);
+    soa.posY.resize(n);
+    soa.posZ.resize(n);
+
+    soa.velX.resize(n);
+    soa.velY.resize(n);
+    soa.velZ.resize(n);
+
+    soa.masses.resize(n);
+
+    for (size_t i = 0; i < n; ++i) {
+        soa.posX[i] = bodies[i].position.x;
+        soa.posY[i] = bodies[i].position.y;
+        soa.posZ[i] = bodies[i].position.z;
+
+        soa.velX[i] = bodies[i].velocity.x;
+        soa.velY[i] = bodies[i].velocity.y;
+        soa.velZ[i] = bodies[i].velocity.z;
+
+        soa.masses[i] = bodies[i].mass;
+    }
+
+    return soa;
+}
+
+std::vector<Body> convertSoA1ToBodies(const BodiesSoA1 &soa) {
     const size_t n = soa.masses.size();
     std::vector<Body> bodies;
     bodies.reserve(n);
 
     for (size_t i = 0; i < n; ++i) {
         bodies.emplace_back(soa.masses[i], soa.positions[i], soa.velocities[i]);
+    }
+
+    return bodies;
+}
+
+std::vector<Body> convertSoA2ToBodies(const BodiesSoA2 &soa) {
+    const size_t n = soa.masses.size();
+    std::vector<Body> bodies;
+    bodies.reserve(n);
+
+    for (size_t i = 0; i < n; ++i) {
+        bodies.emplace_back(
+            soa.masses[i],
+            glm::vec3{soa.posX[i], soa.posY[i], soa.posZ[i]},
+            glm::vec3{soa.velX[i], soa.velY[i], soa.velZ[i]}
+        );
     }
 
     return bodies;

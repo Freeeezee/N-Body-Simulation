@@ -24,7 +24,7 @@ void runSimulation(std::vector<std::vector<Body>> *buffer, Simulation *simulatio
     std::cout << "Average time per step: " << sw.elapsedMillis() / steps << " ms" << std::endl << std::endl;
 }
 
-void runSimulation(std::vector<BodiesSoA> *buffer, SimulationSoA *simulation, const size_t steps) {
+void runSimulation(std::vector<BodiesSoA2> *buffer, SimulationSoA2 *simulation, const size_t steps) {
     std::cout << "Starting simulation with " << steps << " steps..." << std::endl;
 
     stopwatch sw;
@@ -58,7 +58,7 @@ void playSimulationResults(const std::vector<std::vector<Body>> *buffer) {
     }
 }
 
-void playSimulationResults(const std::vector<BodiesSoA> *buffer) {
+void playSimulationResults(const std::vector<BodiesSoA2> *buffer) {
     std::cout << "Playing back simulation results..." << std::endl;
 
     try {
@@ -68,7 +68,7 @@ void playSimulationResults(const std::vector<BodiesSoA> *buffer) {
             if (!renderer->isWindowOpen()) {
                 break;
             }
-            renderer->Draw(convertSoAToBodies(bodies));
+            renderer->Draw(convertSoA2ToBodies(bodies));
         }
     } catch (OpenGLFrameworkException &exception) {
         std::cerr << exception.what() << std::endl;

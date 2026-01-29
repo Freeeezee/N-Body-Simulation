@@ -1,9 +1,11 @@
 #include "util/bodies.h"
 #include "util/runSimulation.hpp"
 #include "rendering/Renderer.hpp"
-#include "simulations/OpenClSimulationSoA.hpp"
-#include "simulations/OpenMpSimulationSoA.hpp"
+#include "simulations/OpenClSimulationSoA2.hpp"
 #include "simulations/OpenMpSingleLoopSimulation.hpp"
+#include "simulations/SequentialSimulation.hpp"
+#include "util/fileUtil.hpp"
+#include "util/serializeString.hpp"
 
 int main() {
     const auto bodies = generateBodies(
@@ -18,10 +20,13 @@ int main() {
             Body(1.0f, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}),
         });
 
-    const auto simulation = new OpenClSimulationSoA(1.0f, bodies);
+    // const auto serializedBodies = loadFromFile("generated_bodies.txt");
+    // const auto bodies = deserializeStringBodies(serializedBodies);
 
-    //std::vector<std::vector<Body>> simulationResults = {};
-    std::vector<BodiesSoA> simulationResults = {};
+    const auto simulation = new OpenClSimulationSoA2(1.0f, bodies);
+
+    // std::vector<std::vector<Body>> simulationResults = {};
+    std::vector<BodiesSoA2> simulationResults = {};
 
     runSimulation(&simulationResults, simulation, 750);
 

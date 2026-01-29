@@ -19,18 +19,32 @@ protected:
     std::vector<Body> bodies;
 };
 
-class SimulationSoA {
+class SimulationSoA1 {
 public:
-    virtual ~SimulationSoA() = default;
+    virtual ~SimulationSoA1() = default;
 
-    SimulationSoA(const float timeStep, const std::vector<Body>& bodies)
-        : timeStep(timeStep), bodies(convertBodiesToSoA(bodies)) {}
+    SimulationSoA1(const float timeStep, const std::vector<Body>& bodies)
+        : timeStep(timeStep), bodies(convertBodiesToSoA1(bodies)) {}
 
-    virtual BodiesSoA calculateNextTick() = 0;
+    virtual BodiesSoA1 calculateNextTick() = 0;
 
 protected:
     const float timeStep;
-    BodiesSoA bodies;
+    BodiesSoA1 bodies;
+};
+
+class SimulationSoA2 {
+public:
+    virtual ~SimulationSoA2() = default;
+
+    SimulationSoA2(const float timeStep, const std::vector<Body>& bodies)
+        : timeStep(timeStep), bodies(convertBodiesToSoA2(bodies)) {}
+
+    virtual BodiesSoA2 calculateNextTick() = 0;
+
+protected:
+    const float timeStep;
+    BodiesSoA2 bodies;
 };
 
 #endif //N_BODY_SIMULATION_SIMULATION_H

@@ -1,16 +1,16 @@
-#include "simulations/OpenClSimulationSoA.hpp"
+#include "simulations/OpenClSimulationSoA1.hpp"
 #include "Constants.hpp"
 #include <fstream>
 #include <vector>
 #include <iostream>
 
-OpenClSimulationSoA::OpenClSimulationSoA(const float timeStep, const std::vector<Body> &bodies)
-    : SimulationSoA(timeStep, bodies) {
+OpenClSimulationSoA1::OpenClSimulationSoA1(const float timeStep, const std::vector<Body> &bodies)
+    : SimulationSoA1(timeStep, bodies) {
     initOpenCL();
     updateBuffers();
 }
 
-void OpenClSimulationSoA::initOpenCL() {
+void OpenClSimulationSoA1::initOpenCL() {
     cl_uint num_platforms;
     clGetPlatformIDs(1, nullptr, &num_platforms);
     cl_platform_id platform;
@@ -48,12 +48,12 @@ void OpenClSimulationSoA::initOpenCL() {
 
     const size_t n = bodies.masses.size();
     const size_t floatSize = n * sizeof(float);
-    
+
     bufPosX = clCreateBuffer(context, CL_MEM_READ_WRITE, floatSize, nullptr, nullptr);
     bufPosY = clCreateBuffer(context, CL_MEM_READ_WRITE, floatSize, nullptr, nullptr);
     bufPosZ = clCreateBuffer(context, CL_MEM_READ_WRITE, floatSize, nullptr, nullptr);
     bufMass = clCreateBuffer(context, CL_MEM_READ_ONLY, floatSize, nullptr, nullptr);
-    
+
     bufVelX = clCreateBuffer(context, CL_MEM_READ_WRITE, floatSize, nullptr, nullptr);
     bufVelY = clCreateBuffer(context, CL_MEM_READ_WRITE, floatSize, nullptr, nullptr);
     bufVelZ = clCreateBuffer(context, CL_MEM_READ_WRITE, floatSize, nullptr, nullptr);
@@ -61,13 +61,13 @@ void OpenClSimulationSoA::initOpenCL() {
     bufNewPosX = clCreateBuffer(context, CL_MEM_READ_WRITE, floatSize, nullptr, nullptr);
     bufNewPosY = clCreateBuffer(context, CL_MEM_READ_WRITE, floatSize, nullptr, nullptr);
     bufNewPosZ = clCreateBuffer(context, CL_MEM_READ_WRITE, floatSize, nullptr, nullptr);
-    
+
     bufNewVelX = clCreateBuffer(context, CL_MEM_READ_WRITE, floatSize, nullptr, nullptr);
     bufNewVelY = clCreateBuffer(context, CL_MEM_READ_WRITE, floatSize, nullptr, nullptr);
     bufNewVelZ = clCreateBuffer(context, CL_MEM_READ_WRITE, floatSize, nullptr, nullptr);
 }
 
-void OpenClSimulationSoA::updateBuffers() {
+void OpenClSimulationSoA1::updateBuffers() {
     const size_t n = bodies.masses.size();
     const size_t floatSize = n * sizeof(float);
 
@@ -86,9 +86,9 @@ void OpenClSimulationSoA::updateBuffers() {
     clEnqueueWriteBuffer(queue, bufVelZ, CL_TRUE, 0, floatSize, vz.data(), 0, nullptr, nullptr);
 }
 
-BodiesSoA OpenClSimulationSoA::calculateNextTick() {
+BodiesSoA1 OpenClSimulationSoA1::calculateNextTick() {
     const int numBodies = static_cast<int>(bodies.masses.size());
-    
+
     clSetKernelArg(kernel, 0, sizeof(cl_mem), &bufPosX);
     clSetKernelArg(kernel, 1, sizeof(cl_mem), &bufPosY);
     clSetKernelArg(kernel, 2, sizeof(cl_mem), &bufPosZ);
@@ -102,7 +102,7 @@ BodiesSoA OpenClSimulationSoA::calculateNextTick() {
     clSetKernelArg(kernel, 10, sizeof(cl_mem), &bufNewVelX);
     clSetKernelArg(kernel, 11, sizeof(cl_mem), &bufNewVelY);
     clSetKernelArg(kernel, 12, sizeof(cl_mem), &bufNewVelZ);
-    
+
     clSetKernelArg(kernel, 13, sizeof(float), &timeStep);
     constexpr float g_val = G;
     constexpr float eps_val = DISTANCE_EPSILON;
@@ -112,10 +112,10 @@ BodiesSoA OpenClSimulationSoA::calculateNextTick() {
 
     size_t globalSize = numBodies;
     clEnqueueNDRangeKernel(queue, kernel, 1, nullptr, &globalSize, nullptr, 0, nullptr, nullptr);
-    
+
     const size_t floatSize = numBodies * sizeof(float);
     std::vector<float> rx(numBodies), ry(numBodies), rz(numBodies), rvx(numBodies), rvy(numBodies), rvz(numBodies);
-    
+
     clEnqueueReadBuffer(queue, bufNewPosX, CL_TRUE, 0, floatSize, rx.data(), 0, nullptr, nullptr);
     clEnqueueReadBuffer(queue, bufNewPosY, CL_TRUE, 0, floatSize, ry.data(), 0, nullptr, nullptr);
     clEnqueueReadBuffer(queue, bufNewPosZ, CL_TRUE, 0, floatSize, rz.data(), 0, nullptr, nullptr);
@@ -134,7 +134,7 @@ BodiesSoA OpenClSimulationSoA::calculateNextTick() {
     return bodies;
 }
 
-OpenClSimulationSoA::~OpenClSimulationSoA() {
+OpenClSimulationSoA1::~OpenClSimulationSoA1() {
     clReleaseMemObject(bufPosX); clReleaseMemObject(bufPosY); clReleaseMemObject(bufPosZ);
     clReleaseMemObject(bufMass);
     clReleaseMemObject(bufVelX); clReleaseMemObject(bufVelY); clReleaseMemObject(bufVelZ);

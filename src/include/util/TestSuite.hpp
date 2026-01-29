@@ -32,11 +32,22 @@ public:
 
     // Register a simulation implementation (SoA style)
     template <typename T>
-    void registerSoASimulation(const std::string& name, bool isBaseline = false) {
+    void registerSoA1Simulation(const std::string& name, bool isBaseline = false) {
         configs.push_back({
             name,
             [this](const std::vector<Body>& b) {
-                return new SoARunner(new T(this->timeStep, b));
+                return new SoARunner1(new T(this->timeStep, b));
+            },
+            isBaseline
+        });
+    }
+
+    template <typename T>
+    void registerSoA2Simulation(const std::string& name, bool isBaseline = false) {
+        configs.push_back({
+            name,
+            [this](const std::vector<Body>& b) {
+                return new SoARunner2(new T(this->timeStep, b));
             },
             isBaseline
         });

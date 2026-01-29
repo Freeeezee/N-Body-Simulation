@@ -30,19 +30,35 @@ public:
     }
 };
 
-// Adapter for SoA Simulation
-class SoARunner : public ISimRunner {
-    std::unique_ptr<SimulationSoA> sim;
-    BodiesSoA lastState;
+// Adapter for SoA 1 Simulation
+class SoARunner1 : public ISimRunner {
+    std::unique_ptr<SimulationSoA1> sim;
+    BodiesSoA1 lastState;
 public:
-    explicit SoARunner(SimulationSoA* s) : sim(s) {}
+    explicit SoARunner1(SimulationSoA1* s) : sim(s) {}
 
     void step() override {
         lastState = sim->calculateNextTick();
     }
 
     std::vector<Body> getCurrentState() override {
-        return convertSoAToBodies(lastState);
+        return convertSoA1ToBodies(lastState);
+    }
+};
+
+// Adapter for SoA 2 Simulation
+class SoARunner2 : public ISimRunner {
+    std::unique_ptr<SimulationSoA2> sim;
+    BodiesSoA2 lastState;
+public:
+    explicit SoARunner2(SimulationSoA2* s) : sim(s) {}
+
+    void step() override {
+        lastState = sim->calculateNextTick();
+    }
+
+    std::vector<Body> getCurrentState() override {
+        return convertSoA2ToBodies(lastState);
     }
 };
 
