@@ -1,11 +1,11 @@
-#include "simulations/SequentialSimulation.hpp"
+#include "simulations/SequentialSimulationAoS.hpp"
 #include "simulations/Simulation.hpp"
 
 #include "Constants.hpp"
 #include "glm/ext/quaternion_geometric.hpp"
 
 
-std::vector<Body> SequentialSimulation::calculateNextTick() {
+std::vector<Body> SequentialSimulationAoS::calculateNextTick() {
     std::vector<Body> newBodies(bodies.size());
 
     for (int i = 0; i < bodies.size(); i++) {
