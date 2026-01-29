@@ -1,5 +1,5 @@
-#ifndef N_BODY_SIMULATION_OPENMPOPENCLSIMULATION_HPP
-#define N_BODY_SIMULATION_OPENMPOPENCLSIMULATION_HPP
+#ifndef N_BODY_SIMULATION_OPENMPOPENCLSIMULATIONSOA_HPP
+#define N_BODY_SIMULATION_OPENMPOPENCLSIMULATIONSOA_HPP
 
 #include "Simulation.hpp"
 #ifdef __APPLE__
@@ -8,10 +8,10 @@
 #include <CL/cl.h>
 #endif
 
-class OpenClSimulation : public SimulationSoA {
+class OpenClSimulationSoA : public SimulationSoA {
 public:
-    OpenClSimulation(float timeStep, const std::vector<Body>& bodies);
-    ~OpenClSimulation() override;
+    OpenClSimulationSoA(float timeStep, const std::vector<Body>& bodies);
+    ~OpenClSimulationSoA() override;
     BodiesSoA calculateNextTick() override;
 
 private:
@@ -42,4 +42,4 @@ private:
     void updateBuffers();
 };
 
-#endif //N_BODY_SIMULATION_OPENMPOPENCLSIMULATION_HPP
+#endif //N_BODY_SIMULATION_OPENMPOPENCLSIMULATIONSOA_HPP
