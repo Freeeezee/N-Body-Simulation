@@ -22,7 +22,7 @@ void calculate_forces(
         float4 p_j = pos[j];
         float3 direction = p_j.xyz - p_i.xyz;
         float distSq = dot(direction, direction) + eps;
-        float invDistCube = rsqrt(distSq * distSq * distSq);
+        float invDistCube = 1.0 / (distSq * sqrt(distSq));
 
         totalAcc += G * p_j.w * direction * invDistCube;
     }
