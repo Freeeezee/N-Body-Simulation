@@ -10,7 +10,7 @@ BodiesSoA OpenMpSimulationSoA::calculateNextTick() {
     nextState.velocities.resize(n);
     nextState.masses = bodies.masses;
 
-    #pragma omp parallel for schedule(dynamic)
+    #pragma omp parallel for schedule(static)
     for (int i = 0; i < n; ++i) {
         const glm::vec3 pos = bodies.positions[i];
         glm::vec3 vel = bodies.velocities[i];
