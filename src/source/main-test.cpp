@@ -14,7 +14,9 @@
 #include "simulations/OpenMpSimulationAoS.hpp"
 #include "simulations/OpenMpSimulationSoA1.hpp"
 #include "simulations/OpenMpSimulationSoA2.hpp"
+#include "simulations/OpenMpSimulationSoA2SplitLoop.hpp"
 #include "simulations/OpenMpSingleLoopSimulation.hpp"
+#include "simulations/OpenMpSingleLoopSimulationSoA2.hpp"
 
 
 void generateTestSets(const std::vector<int> &testCounts) {
@@ -60,8 +62,8 @@ void generateTestSets(const std::vector<int> &testCounts) {
 }
 
 int main(int argc, char** argv) {
-    const std::vector bodyCounts = { 2000 };
-    const std::vector testStepCounts = { 500 };
+    const std::vector bodyCounts = { 3000 };
+    const std::vector testStepCounts = { 300 };
     constexpr int repetitions = 2;
 
     generateTestSets(bodyCounts);
@@ -73,10 +75,12 @@ int main(int argc, char** argv) {
         //suite.registerSoA1Simulation<OpenClSimulationSoA1>("OpenClSimulationSoA1");
         //suite.registerSoA2Simulation<OpenClSimulationSoA2>("OpenClSimulationSoA2");
         suite.registerSimulation<OpenMpSimulationAoS>("OpenMpSimulationAoS", true);
-        suite.registerSoA1Simulation<OpenMpSimulationSoA1>("OpenMpSimulationSoA1", false);
-        suite.registerSoA2Simulation<OpenMpSimulationSoA2>("OpenMpSimulationSoA2", false);
+        suite.registerSoA1Simulation<OpenMpSimulationSoA1>("OpenMpSimulationSoA1");
+        suite.registerSoA2Simulation<OpenMpSimulationSoA2>("OpenMpSimulationSoA2");
         //suite.registerSimulation<OpenClSimulationAoS>("OpenClSimulationAoS");
         //suite.registerSimulation<OpenMpSingleLoopSimulation>("OpenMpSingleLoopSimulation");
+        //suite.registerSoA2Simulation<OpenMpSingleLoopSimulationSoA2>("OpenMpSingleLoopSimulationSoA2");
+        suite.registerSoA2Simulation<OpenMpSimulationSoA2SplitLoop>("OpenMpSimulationSoA2SplitLoop");
         //suite.registerSimulation<MpiSimulation>("MpiSimulation");
         for (const int stepCount : testStepCounts) {
             suite.runAll(stepCount, repetitions);
