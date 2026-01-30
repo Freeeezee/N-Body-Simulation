@@ -28,6 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1 libglu1-mesa \
     libx11-6 libxrandr2 libxinerama1 libxcursor1 libxi6 \
     openssh-server \
+    libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /var/run/sshd /root/.ssh \
