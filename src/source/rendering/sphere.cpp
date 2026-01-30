@@ -3,6 +3,7 @@
 #include "Constants.hpp"
 #include "glm/vec3.hpp"
 #include "rendering/helpers.hpp"
+#include <cmath>
 
 std::pair<std::vector<GLfloat>, std::vector<GLfloat>> generateSphere(const float radius, const int sectors, const int stacks) {
     std::vector<GLfloat> mesh;
@@ -18,9 +19,9 @@ std::pair<std::vector<GLfloat>, std::vector<GLfloat>> generateSphere(const float
 
             auto getPt = [&](float phi, float theta) -> glm::vec3 {
                 return glm::vec3(
-                    radius * sin(phi) * cos(theta),
-                    radius * cos(phi),
-                    radius * sin(phi) * sin(theta)
+                    radius * std::sin(phi) * std::cos(theta),
+                    radius * std::cos(phi),
+                    radius * std::sin(phi) * std::sin(theta)
                 );
             };
 

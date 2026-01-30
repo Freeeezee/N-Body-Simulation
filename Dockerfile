@@ -14,6 +14,8 @@ WORKDIR /src
 COPY . .
 
 RUN cmake -S . -B /build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+        -DGLFW_BUILD_WAYLAND=OFF \
+        -DGLFW_BUILD_X11=ON \
  && cmake --build /build --target n_body_simulation_mpi -j
 
 FROM ubuntu:24.04 AS runtime
@@ -43,7 +45,8 @@ COPY --from=build /src/src/shader ./shader
 COPY --from=build /src/src/kernels ./kernels
 
 COPY start-mpi.sh /opt/nbody/start-mpi.sh
-RUN chmod +x /opt/nbody/start-mpi.sh
+RUN sed -i 's/\r$//' /opt/nbody/start-mpi.sh \
+ && chmod +x /opt/nbody/start-mpi.sh
 
 EXPOSE 22
 ENTRYPOINT ["/opt/nbody/start-mpi.sh"]
