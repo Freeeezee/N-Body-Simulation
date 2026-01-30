@@ -14,6 +14,8 @@ WORKDIR /src
 COPY . .
 
 RUN cmake -S . -B /build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+        -DGLFW_BUILD_WAYLAND=OFF \
+        -DGLFW_BUILD_X11=ON \
  && cmake --build /build --target n_body_simulation_mpi -j
 
 FROM ubuntu:24.04 AS runtime
