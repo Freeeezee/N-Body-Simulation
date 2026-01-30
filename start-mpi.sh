@@ -14,6 +14,9 @@ set -euo pipefail
 
 : "${ONLY_RANK0_OUTPUT:=1}"
 
+: "${OMPI_TCP_IF_INCLUDE:=}"
+: "${OMPI_TCP_IF_EXCLUDE:=lo,docker0}"
+
 mkdir -p /var/run/sshd /root/.ssh
 chmod 700 /root/.ssh
 
@@ -88,8 +91,20 @@ MPICMD=(
   -np "${NP}"
   -map-by ppr:1:node
   --tag-output
+
+  # Force TCP and avoid docker/loopback interfaces for OpenMPI internal comms
+  --mca btl tcp,self
+  --mca oob tcp
+  --mca btl_tcp_if_exclude "${OMPI_TCP_IF_EXCLUDE}"
+  --mca oob_tcp_if_exclude "${OMPI_TCP_IF_EXCLUDE}"
+
   "${MPI_BIN}"
 )
+
+if [[ -n "${OMPI_TCP_IF_INCLUDE}" ]]; then
+  MPICMD+=( --mca btl_tcp_if_include "${OMPI_TCP_IF_INCLUDE}" )
+  MPICMD+=( --mca oob_tcp_if_include "${OMPI_TCP_IF_INCLUDE}" )
+fi
 
 if [[ -n "${MPI_ARGS}" ]]; then
   # shellcheck disable=SC2206
