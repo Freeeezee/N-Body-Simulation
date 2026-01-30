@@ -45,7 +45,8 @@ COPY --from=build /src/src/shader ./shader
 COPY --from=build /src/src/kernels ./kernels
 
 COPY start-mpi.sh /opt/nbody/start-mpi.sh
-RUN chmod +x /opt/nbody/start-mpi.sh
+RUN sed -i 's/\r$//' /opt/nbody/start-mpi.sh \
+ && chmod +x /opt/nbody/start-mpi.sh
 
 EXPOSE 22
 ENTRYPOINT ["/opt/nbody/start-mpi.sh"]
