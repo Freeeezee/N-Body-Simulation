@@ -36,3 +36,17 @@ docker run --rm --name nbody-launcher \
   -e MPI_ARGS="" \
   nbody-mpi
 ```
+
+Linux (network host):
+```shell
+docker run --rm --name nbody-launcher \
+  --network host \
+  -e ROLE=launcher \
+  -e SSH_PORT=2222 \
+  -e HOSTS="IP1 IP2 IP3" \
+  -e SSH_PRIVATE_KEY="$(cat mpi_key)" \
+  -e SSH_PUBLIC_KEY="$(cat mpi_key.pub)" \
+  -e ONLY_RANK0_OUTPUT=1 \
+  -e MPI_ARGS="" \
+  nbody-mpi
+```
