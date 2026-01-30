@@ -45,6 +45,8 @@ COPY --from=build /build/n_body_simulation_mpi ./n_body_simulation_mpi
 COPY --from=build /src/src/shader ./shader
 COPY --from=build /src/src/kernels ./kernels
 
+COPY --from=build /src/generated_bodies.txt ./generated_bodies.txt
+
 COPY start-mpi.sh /opt/nbody/start-mpi.sh
 RUN sed -i 's/\r$//' /opt/nbody/start-mpi.sh \
  && chmod +x /opt/nbody/start-mpi.sh
