@@ -62,9 +62,15 @@ fi
 
 printf "%s\n" ${HOSTS} > "${HOSTFILE}"
 
-echo "[start-mpi.sh] Checking SSH connectivity to each host on port ${SSH_PORT}..."
+echo "[start-mpi.sh] Checking SSH connectivity to each *remote* host on port ${SSH_PORT}..."
 while read -r h; do
   [[ -z "${h}" ]] && continue
+
+  if [[ "${h}" == "localhost" || "${h}" == "127.0.0.1" ]]; then
+    echo "  - ${h} (local, skip SSH check)"
+    continue
+  fi
+
   echo "  - ${h}"
   ssh -o BatchMode=yes "root@${h}" "true" || {
     echo "ERROR: Cannot SSH to ${h} on port ${SSH_PORT}." >&2
@@ -72,7 +78,7 @@ while read -r h; do
   }
 done < "${HOSTFILE}"
 
-NP=$(wc -l < "${HOSTFILE}" | tr -d ' ')
+NP=$(grep -cve '^\s*$' "${HOSTFILE}" | tr -d ' ')
 echo "[start-mpi.sh] Launching MPI: 1 rank per host, total ranks=${NP}"
 
 MPICMD=(
