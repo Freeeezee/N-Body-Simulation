@@ -1,6 +1,9 @@
 #include <iostream>
 #include <mpi.h>
 #include <vector>
+#include <numeric>
+#include <algorithm>
+#include <cmath>
 
 #include "util/fileUtil.hpp"
 #include "util/serializeString.hpp"
@@ -12,12 +15,68 @@
 
 using ChosenSimulation = SequentialSimulationAoS;
 #define STEPS 500
+#define TIMING_STEPS 5
 
 static void computeChunk(const int worldRank, const int worldSize, const size_t n,
                          size_t& startIndex, size_t& endIndexExclusive) {
     const size_t chunkSize = n / static_cast<size_t>(worldSize);
     startIndex = static_cast<size_t>(worldRank) * chunkSize;
     endIndexExclusive = worldRank == worldSize - 1 ? n : startIndex + chunkSize;
+}
+
+static void computeWeightedChunksFromTimes(
+    const size_t n,
+    const std::vector<double>& avgTimes,
+    std::vector<int>& recvCountsBytes,
+    std::vector<int>& displsBytes
+) {
+    const int worldSize = static_cast<int>(avgTimes.size());
+    constexpr double eps = 1e-12;
+
+    std::vector speeds(worldSize, 0.0);
+    for (int r = 0; r < worldSize; ++r) {
+        speeds[r] = 1.0 / std::max(avgTimes[r], eps);
+    }
+    const double sumSpeed = std::accumulate(speeds.begin(), speeds.end(), 0.0);
+
+    std::vector<size_t> counts(worldSize, 0);
+    size_t assigned = 0;
+    for (int r = 0; r < worldSize; ++r) {
+        const double frac = sumSpeed > 0.0 ? speeds[r] / sumSpeed : 1.0 / worldSize;
+        const size_t c = std::llround(frac * static_cast<double>(n));
+        counts[r] = c;
+        assigned += c;
+    }
+
+    if (assigned != n) {
+        if (assigned < n) {
+            std::vector<int> order(worldSize);
+            std::iota(order.begin(), order.end(), 0);
+            std::sort(order.begin(), order.end(), [&](int a, int b) { return speeds[a] > speeds[b]; });
+
+            const size_t missing = n - assigned;
+            for (size_t i = 0; i < missing; ++i) {
+                counts[order[i % static_cast<size_t>(worldSize)]] += 1;
+            }
+        } else {
+            std::vector<int> order(worldSize);
+            std::iota(order.begin(), order.end(), 0);
+            std::sort(order.begin(), order.end(), [&](int a, int b) { return speeds[a] < speeds[b]; });
+
+            size_t extra = assigned - n;
+            for (size_t i = 0; i < extra; ++i) {
+                if (const int r = order[i % static_cast<size_t>(worldSize)]; counts[r] > 0) counts[r] -= 1;
+                else extra += 1;
+            }
+        }
+    }
+
+    size_t dispBodies = 0;
+    for (int r = 0; r < worldSize; ++r) {
+        displsBytes[r] = static_cast<int>(dispBodies * sizeof(Body));
+        recvCountsBytes[r] = static_cast<int>(counts[r] * sizeof(Body));
+        dispBodies += counts[r];
+    }
 }
 
 int main(int argc, char** argv) {
@@ -46,6 +105,7 @@ int main(int argc, char** argv) {
 
     std::vector<int> recvCounts(worldSize);
     std::vector<int> displs(worldSize);
+
     for (int r = 0; r < worldSize; ++r) {
         size_t s = 0, e = 0;
         computeChunk(r, worldSize, n, s, e);
@@ -56,7 +116,7 @@ int main(int argc, char** argv) {
 
     size_t startIndex = 0, endIndexExclusive = 0;
     computeChunk(worldRank, worldSize, n, startIndex, endIndexExclusive);
-    const size_t localCount = endIndexExclusive - startIndex;
+    size_t localCount = endIndexExclusive - startIndex;
 
     std::vector<Body> localNext(localCount);
 
@@ -67,6 +127,8 @@ int main(int argc, char** argv) {
 
     simulation.setRange(startIndex, endIndexExclusive);
 
+    double computeTimeSum = 0.0;
+
     stopwatch sw;
     sw.start();
 
@@ -74,7 +136,14 @@ int main(int argc, char** argv) {
         MPI_Bcast(bodies.data(), static_cast<int>(n * sizeof(Body)), MPI_BYTE, 0, MPI_COMM_WORLD);
 
         simulation.setBodies(bodies);
+
+        const double t0 = MPI_Wtime();
         const std::vector<Body> fullNext = simulation.calculateNextTick();
+        const double t1 = MPI_Wtime();
+
+        if (step < TIMING_STEPS) {
+            computeTimeSum += (t1 - t0);
+        }
 
         for (size_t k = 0; k < localCount; ++k) {
             localNext[k] = fullNext[startIndex + k];
@@ -88,6 +157,30 @@ int main(int argc, char** argv) {
 
         if (worldRank == 0) {
             simulationResults.push_back(bodies);
+        }
+
+        if (step + 1 == TIMING_STEPS) {
+            const double avgLocal = computeTimeSum / static_cast<double>(TIMING_STEPS);
+            std::vector<double> avgTimes;
+            if (worldRank == 0) avgTimes.resize(worldSize);
+
+            MPI_Gather(&avgLocal, 1, MPI_DOUBLE,
+                       worldRank == 0 ? avgTimes.data() : nullptr, 1, MPI_DOUBLE,
+                       0, MPI_COMM_WORLD);
+
+            if (worldRank == 0) {
+                computeWeightedChunksFromTimes(n, avgTimes, recvCounts, displs);
+            }
+
+            MPI_Bcast(recvCounts.data(), worldSize, MPI_INT, 0, MPI_COMM_WORLD);
+            MPI_Bcast(displs.data(), worldSize, MPI_INT, 0, MPI_COMM_WORLD);
+
+            startIndex = static_cast<size_t>(displs[worldRank] / static_cast<int>(sizeof(Body)));
+            localCount = static_cast<size_t>(recvCounts[worldRank] / static_cast<int>(sizeof(Body)));
+            endIndexExclusive = startIndex + localCount;
+
+            localNext.resize(localCount);
+            simulation.setRange(startIndex, endIndexExclusive);
         }
     }
 
