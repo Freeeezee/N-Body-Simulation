@@ -8,7 +8,7 @@
 std::vector<Body> SequentialSimulationAoS::calculateNextTick() {
     std::vector<Body> newBodies(bodies.size());
 
-    for (int i = 0; i < bodies.size(); i++) {
+    for (unsigned long i = startIndex; i < endIndex; i++) {
         const glm::vec3 pos = bodies[i].position;
         glm::vec3 vel = bodies[i].velocity;
 
