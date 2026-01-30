@@ -92,11 +92,13 @@ int main(int argc, char** argv) {
     if (worldRank == 0) {
         const auto serializedBodies = loadFromFile("generated_bodies.txt");
         bodies = deserializeStringBodies(serializedBodies);
+        std::cout << "Loaded bodies from file: " << serializedBodies << std::endl;
     }
 
     size_t n = bodies.size();
     MPI_Bcast(&n, 1, MPI_UNSIGNED_LONG_LONG, 0, MPI_COMM_WORLD);
     if (worldRank != 0) {
+        std::cout << "Number of bodies (r1): " << n << std::endl;
         bodies.resize(n);
     }
 
@@ -133,6 +135,7 @@ int main(int argc, char** argv) {
     sw.start();
 
     for (size_t step = 0; step < STEPS; ++step) {
+        std::cout << "Step " << step + 1 << std::endl;
         MPI_Bcast(bodies.data(), static_cast<int>(n * sizeof(Body)), MPI_BYTE, 0, MPI_COMM_WORLD);
 
         simulation.setBodies(bodies);
@@ -180,6 +183,7 @@ int main(int argc, char** argv) {
             endIndexExclusive = startIndex + localCount;
 
             localNext.resize(localCount);
+            std::cout << "Updating to startindex (R" << worldRank << "): " << startIndex << " endindex: " << endIndexExclusive << std::endl;
             simulation.setRange(startIndex, endIndexExclusive);
         }
     }
