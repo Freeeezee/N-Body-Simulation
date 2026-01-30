@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
     if (worldRank == 0) {
         const auto serializedBodies = loadFromFile("generated_bodies.txt");
         bodies = deserializeStringBodies(serializedBodies);
-        std::cout << "Loaded bodies from file: " << serializedBodies << std::endl;
+        std::cout << "Loaded bodies from file." << std::endl;
     }
 
     size_t n = bodies.size();
