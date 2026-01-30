@@ -3,7 +3,6 @@
 #include "rendering/Renderer.hpp"
 #include "simulations/OpenClSimulationSoA2.hpp"
 #include "simulations/OpenMpSingleLoopSimulation.hpp"
-#include "simulations/SequentialSimulation.hpp"
 #include "util/fileUtil.hpp"
 #include "util/serializeString.hpp"
 

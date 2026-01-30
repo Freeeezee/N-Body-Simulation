@@ -8,14 +8,14 @@ inline float fastInvSqrt(float number) {
 }
 
 BodiesSoA2 OpenMpSimulationSoA2SplitLoop::calculateNextTick() {
-    const size_t n = bodies.masses.size();
+    const int n = static_cast<int>(bodies.masses.size());
 
     std::vector<float> nextPosX(n), nextPosY(n), nextPosZ(n);
     std::vector<float> nextVelX(n), nextVelY(n), nextVelZ(n);
 
     std::vector<float> g_masses(n);
     #pragma omp parallel for schedule(static)
-    for (size_t i = 0; i < n; ++i) {
+    for (int i = 0; i < n; ++i) {
         g_masses[i] = G * bodies.masses[i];
     }
 

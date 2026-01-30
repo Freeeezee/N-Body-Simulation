@@ -45,7 +45,7 @@ std::vector<Body> OpenMpSingleLoopSimulation::calculateNextTick() {
     }
 
     #pragma omp parallel for
-    for (size_t i = 0; i < n; ++i) {
+    for (int i = 0; i < n; ++i) {
         newBodies[i].velocity += totalAccelerations[i] * timeStep;
         newBodies[i].position += newBodies[i].velocity * timeStep;
     }

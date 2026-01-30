@@ -4,8 +4,10 @@
 #include <vector>
 #include <algorithm> // for std::max if needed
 
+#include "models/Body.hpp"
+
 BodiesSoA2 OpenMpSingleLoopSimulationSoA2::calculateNextTick() {
-    const size_t n = bodies.masses.size();
+    const int n = static_cast<int>(bodies.masses.size());
     const long long acc_count = static_cast<long long>(n) * (n - 1) / 2;
 
     // Temporary accumulators for acceleration (or force)
@@ -70,7 +72,7 @@ BodiesSoA2 OpenMpSingleLoopSimulationSoA2::calculateNextTick() {
 
     // 2. Integration Step (Fully Parallel, No Data Races)
     #pragma omp parallel for schedule(static)
-    for (size_t i = 0; i < n; ++i) {
+    for (int i = 0; i < n; ++i) {
         // Symplectic Euler (or similar semi-implicit scheme)
         // v_new = v_old + a * dt
         float v_ix = bodies.velX[i] + accX[i] * timeStep;

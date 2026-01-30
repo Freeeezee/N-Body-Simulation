@@ -1,5 +1,4 @@
 #include "../include/simulations/OpenClSimulationSoA2.hpp"
-#include "../include/simulations/SequentialSimulation.hpp"
 #include "../include/util/TestSuite.hpp"
 #include "util/fileUtil.hpp"
 #include "util/serializeString.hpp"
@@ -7,10 +6,10 @@
 #include <string>
 #include <iostream>
 
-#include "simulations/MpiSimulation.hpp"
 #include "simulations/OpenClSimulationAoS.hpp"
 #include "simulations/OpenClSimulationSoA1.hpp"
 #include "simulations/OpenClSimulationSoA2.hpp"
+#include "simulations/OpenClSimulationSoA2SplitLoop.hpp"
 #include "simulations/OpenMpSimulationAoS.hpp"
 #include "simulations/OpenMpSimulationSoA1.hpp"
 #include "simulations/OpenMpSimulationSoA2.hpp"
@@ -62,8 +61,8 @@ void generateTestSets(const std::vector<int> &testCounts) {
 }
 
 int main(int argc, char** argv) {
-    const std::vector bodyCounts = { 3000 };
-    const std::vector testStepCounts = { 300 };
+    const std::vector bodyCounts = { 5000, 10000, 15000, 20000, 30000, 40000 };
+    const std::vector testStepCounts = { 750 };
     constexpr int repetitions = 2;
 
     generateTestSets(bodyCounts);
@@ -72,15 +71,17 @@ int main(int argc, char** argv) {
         std::string filename = "generated_bodies" + std::to_string(count) + ".txt";
         TestSuite suite(filename, 1.0f);
         //suite.registerSimulation<SequentialSimulation>("Sequential_Baseline", true);
-        //suite.registerSoA1Simulation<OpenClSimulationSoA1>("OpenClSimulationSoA1");
-        //suite.registerSoA2Simulation<OpenClSimulationSoA2>("OpenClSimulationSoA2");
-        suite.registerSimulation<OpenMpSimulationAoS>("OpenMpSimulationAoS", true);
-        suite.registerSoA1Simulation<OpenMpSimulationSoA1>("OpenMpSimulationSoA1");
-        suite.registerSoA2Simulation<OpenMpSimulationSoA2>("OpenMpSimulationSoA2");
+        suite.registerSimulation<OpenClSimulationAoS>("OpenClSimulationAoS");
+        suite.registerSoA1Simulation<OpenClSimulationSoA1>("OpenClSimulationSoA1");
+        suite.registerSoA2Simulation<OpenClSimulationSoA2>("OpenClSimulationSoA2");
+        suite.registerSoA2Simulation<OpenClSimulationSoA2SplitLoop>("OpenClSimulationSoA2SplitLoop");
+        //suite.registerSimulation<OpenMpSimulationAoS>("OpenMpSimulationAoS", true);
+        //suite.registerSoA1Simulation<OpenMpSimulationSoA1>("OpenMpSimulationSoA1");
+        //suite.registerSoA2Simulation<OpenMpSimulationSoA2>("OpenMpSimulationSoA2");
         //suite.registerSimulation<OpenClSimulationAoS>("OpenClSimulationAoS");
         //suite.registerSimulation<OpenMpSingleLoopSimulation>("OpenMpSingleLoopSimulation");
         //suite.registerSoA2Simulation<OpenMpSingleLoopSimulationSoA2>("OpenMpSingleLoopSimulationSoA2");
-        suite.registerSoA2Simulation<OpenMpSimulationSoA2SplitLoop>("OpenMpSimulationSoA2SplitLoop");
+        //suite.registerSoA2Simulation<OpenMpSimulationSoA2SplitLoop>("OpenMpSimulationSoA2SplitLoop");
         //suite.registerSimulation<MpiSimulation>("MpiSimulation");
         for (const int stepCount : testStepCounts) {
             suite.runAll(stepCount, repetitions);
