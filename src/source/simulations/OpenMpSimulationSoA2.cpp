@@ -1,6 +1,8 @@
 #include "simulations/OpenMpSimulationSoA2.hpp"
 #include "Constants.hpp"
 #include <cmath>
+#include <iostream>
+#include <omp.h>
 
 
 BodiesSoA2 OpenMpSimulationSoA2::calculateNextTick() {
@@ -11,6 +13,7 @@ BodiesSoA2 OpenMpSimulationSoA2::calculateNextTick() {
 
     #pragma omp parallel for schedule(static)
     for (int i = 0; i < static_cast<int>(n); ++i) {
+        //std::cout << omp_get_num_threads() << std::endl;
         const float p_ix = bodies.posX[i];
         const float p_iy = bodies.posY[i];
         const float p_iz = bodies.posZ[i];

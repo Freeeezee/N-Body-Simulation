@@ -55,10 +55,14 @@ function(configure_nbody_target target)
             src/include/opengl-framework
     )
 
-    target_compile_options(${target} PRIVATE
-            -Xpreprocessor -fopenmp
-            -I${OPENMP_INCLUDE_DIR}
-    )
+    if(MSVC)
+        target_compile_options(${target} PRIVATE /openmp:experimental)
+    else()
+        target_compile_options(${target} PRIVATE
+                -Xpreprocessor -fopenmp
+                -I${OPENMP_INCLUDE_DIR}
+        )
+    endif()
 
     if (APPLE)
         target_link_directories(${target} PRIVATE ${OPENMP_LIB_DIR})
