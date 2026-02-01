@@ -9,6 +9,9 @@ set -euo pipefail
 : "${HOSTFILE:=/opt/nbody/hosts}"
 
 : "${SSH_PORT:=2222}"
+
+: "${SSHD_PORT:=22}"
+
 : "${SSH_PRIVATE_KEY:=}"
 : "${SSH_PUBLIC_KEY:=}"
 
@@ -40,11 +43,14 @@ if [[ -n "${SSH_PRIVATE_KEY}" ]]; then
   chmod 600 /root/.ssh/id_rsa
 fi
 
+sed -i "s/^#\?Port .*/Port ${SSHD_PORT}/" /etc/ssh/sshd_config
+grep -q '^ListenAddress ' /etc/ssh/sshd_config || echo "ListenAddress 0.0.0.0" >> /etc/ssh/sshd_config
+
 ssh-keygen -A >/dev/null 2>&1 || true
 /usr/sbin/sshd
 
 if [[ "${ROLE}" == "worker" ]]; then
-  echo "[start-mpi.sh] ROLE=worker: sshd running (container:22 -> host:${SSH_PORT} if published)."
+  echo "[start-mpi.sh] ROLE=worker: sshd running (listening on ${SSHD_PORT})."
   exec tail -f /dev/null
 fi
 
@@ -73,9 +79,8 @@ while read -r h; do
     echo "  - ${h} (local, skip SSH check)"
     continue
   fi
-
   echo "  - ${h}"
-  ssh -o BatchMode=yes "root@${h}" "true" || {
+  ssh -o BatchMode=yes -p "${SSH_PORT}" "root@${h}" "true" || {
     echo "ERROR: Cannot SSH to ${h} on port ${SSH_PORT}." >&2
     exit 5
   }
@@ -92,8 +97,9 @@ MPICMD=(
   -map-by ppr:1:node
   --tag-output
 
-  # Force TCP and avoid docker/loopback interfaces for OpenMPI internal comms
-  --mca btl tcp,self
+  --mca plm_rsh_agent "ssh -p ${SSH_PORT} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
+  --mca btl tcp self
   --mca oob tcp
   --mca btl_tcp_if_exclude "${OMPI_TCP_IF_EXCLUDE}"
   --mca oob_tcp_if_exclude "${OMPI_TCP_IF_EXCLUDE}"
