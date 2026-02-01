@@ -88,6 +88,8 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &worldRank);
     MPI_Comm_size(MPI_COMM_WORLD, &worldSize);
 
+    system("echo \"$(echo R1) $(hostname -I)\"");
+
     std::vector<Body> bodies;
     if (worldRank == 0) {
         const auto serializedBodies = loadFromFile("generated_bodies.txt");
@@ -98,7 +100,6 @@ int main(int argc, char** argv) {
     size_t n = bodies.size();
     MPI_Bcast(&n, 1, MPI_UNSIGNED_LONG_LONG, 0, MPI_COMM_WORLD);
     if (worldRank != 0) {
-        std::cout << "Number of bodies (r1): " << n << std::endl;
         bodies.resize(n);
     }
 
@@ -135,7 +136,7 @@ int main(int argc, char** argv) {
     sw.start();
 
     for (size_t step = 0; step < STEPS; ++step) {
-        std::cout << "Step " << step + 1 << std::endl;
+        std::cout << "Rank " << worldRank << " Step " << step + 1 << "Range: " << startIndex << " - " << endIndexExclusive << std::endl;
         MPI_Bcast(bodies.data(), static_cast<int>(n * sizeof(Body)), MPI_BYTE, 0, MPI_COMM_WORLD);
 
         simulation.setBodies(bodies);

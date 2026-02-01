@@ -4,31 +4,29 @@
 
 ```shell
 MANAGER_IP="<manager-ip>"
-docker swarm init --advertise-addr "${MANAGER_IP}"
+sudo docker swarm init --advertise-addr "${MANAGER_IP}"
 ```
 
 ## Worker – Join
 
-```shell
-docker swarm join-token worker
-```
+Run command received from manager initialization.
 
 ## Build
 
 ```shell
-docker build -t nbody-mpi:latest .
+sudo docker build -t nbody-mpi:latest .
 ```
 
 ## Manager – Deploy
 
 ```shell
-docker stack deploy -c swarm-mpi.yml nbody
-docker service ls
-docker service ps nbody_mpi
+sudo docker stack deploy -c swarm-mpi.yml nbody
+sudo docker service ls
+sudo docker service ps nbody_mpi
 ```
 
 ## Manager – Run
 
 ```shell
-./run_swarm_mpi.sh nbody mpi
+sudo ./run_swarm_mpi.sh nbody mpi
 ```
