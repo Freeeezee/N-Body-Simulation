@@ -20,6 +20,7 @@ sudo docker build -t nbody-mpi:latest .
 ## Manager – Deploy
 
 ```shell
+sudo docker stack rm nbody
 sudo docker stack deploy -c swarm-mpi.yml nbody
 sudo docker service ls
 sudo docker service ps nbody_mpi
