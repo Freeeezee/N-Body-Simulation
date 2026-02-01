@@ -62,7 +62,7 @@ void generateTestSets(const std::vector<int> &testCounts) {
 }
 
 int main(int argc, char** argv) {
-    const std::vector bodyCounts = { 5000};
+    const std::vector bodyCounts = { 10000 };
     const std::vector testStepCounts = { 750 };
     constexpr int repetitions = 10;
 

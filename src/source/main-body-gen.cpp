@@ -5,7 +5,7 @@
 
 int main() {
     const auto bodies = generateBodies(
-    5000,
+    10000,
     1.0f,
     1.0f,
     {-200.0f, -200.0f, -200.0f},
