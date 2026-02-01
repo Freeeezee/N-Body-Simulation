@@ -18,7 +18,7 @@ set -euo pipefail
 : "${ONLY_RANK0_OUTPUT:=1}"
 
 : "${OMPI_TCP_IF_INCLUDE:=}"
-: "${OMPI_TCP_IF_EXCLUDE:=lo,docker0}"
+: "${OMPI_TCP_IF_EXCLUDE:=lo,docker0,virbr0,br0}"
 
 mkdir -p /var/run/sshd /root/.ssh
 chmod 700 /root/.ssh
@@ -71,6 +71,27 @@ fi
 
 printf "%s\n" ${HOSTS} > "${HOSTFILE}"
 
+if [[ -z "${OMPI_TCP_IF_INCLUDE}" ]]; then
+  first_remote=""
+  while read -r h; do
+    [[ -z "${h}" ]] && continue
+    if [[ "${h}" != "localhost" && "${h}" != "127.0.0.1" ]]; then
+      first_remote="${h}"
+      break
+    fi
+  done < "${HOSTFILE}"
+
+  if [[ -n "${first_remote}" ]] && command -v ip >/dev/null 2>&1; then
+    OMPI_TCP_IF_INCLUDE="$(ip route get "${first_remote}" 2>/dev/null | awk '/ dev /{for (i=1;i<=NF;i++) if ($i=="dev"){print $(i+1); exit}}')"
+  fi
+fi
+
+if [[ -n "${OMPI_TCP_IF_INCLUDE}" ]]; then
+  echo "[start-mpi.sh] OpenMPI will use interface: ${OMPI_TCP_IF_INCLUDE}"
+else
+  echo "WARNING: Could not auto-detect OMPI_TCP_IF_INCLUDE. You should set it (e.g. eth0/eno1)." >&2
+fi
+
 echo "[start-mpi.sh] Checking SSH connectivity to each *remote* host on port ${SSH_PORT}..."
 while read -r h; do
   [[ -z "${h}" ]] && continue
@@ -103,14 +124,14 @@ MPICMD=(
   --mca oob tcp
   --mca btl_tcp_if_exclude "${OMPI_TCP_IF_EXCLUDE}"
   --mca oob_tcp_if_exclude "${OMPI_TCP_IF_EXCLUDE}"
-
-  "${MPI_BIN}"
 )
 
 if [[ -n "${OMPI_TCP_IF_INCLUDE}" ]]; then
   MPICMD+=( --mca btl_tcp_if_include "${OMPI_TCP_IF_INCLUDE}" )
   MPICMD+=( --mca oob_tcp_if_include "${OMPI_TCP_IF_INCLUDE}" )
 fi
+
+MPICMD+=( "${MPI_BIN}" )
 
 if [[ -n "${MPI_ARGS}" ]]; then
   # shellcheck disable=SC2206
