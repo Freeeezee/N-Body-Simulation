@@ -99,7 +99,7 @@ MPICMD=(
 
   --mca plm_rsh_agent "ssh -p ${SSH_PORT} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 
-  --mca btl tcp self
+  --mca btl tcp,self
   --mca oob tcp
   --mca btl_tcp_if_exclude "${OMPI_TCP_IF_EXCLUDE}"
   --mca oob_tcp_if_exclude "${OMPI_TCP_IF_EXCLUDE}"
