@@ -17,7 +17,7 @@ set -euo pipefail
 
 : "${ONLY_RANK0_OUTPUT:=1}"
 
-: "${OMPI_TCP_IF_INCLUDE:=}"
+: "${OMPI_TCP_INCLUDE:=}"
 
 mkdir -p /var/run/sshd /root/.ssh
 chmod 700 /root/.ssh
@@ -70,7 +70,8 @@ fi
 
 printf "%s\n" ${HOSTS} > "${HOSTFILE}"
 
-if [[ -z "${OMPI_TCP_IF_INCLUDE}" ]]; then
+# Auto-detect a good TCP include (CIDR) based on routing to first remote host
+if [[ -z "${OMPI_TCP_INCLUDE}" ]] && command -v ip >/dev/null 2>&1; then
   first_remote=""
   while read -r h; do
     [[ -z "${h}" ]] && continue
@@ -80,31 +81,19 @@ if [[ -z "${OMPI_TCP_IF_INCLUDE}" ]]; then
     fi
   done < "${HOSTFILE}"
 
-  if [[ -n "${first_remote}" ]] && command -v ip >/dev/null 2>&1; then
-    OMPI_TCP_IF_INCLUDE="$(ip route get "${first_remote}" 2>/dev/null | awk '/ dev /{for (i=1;i<=NF;i++) if ($i=="dev"){print $(i+1); exit}}')"
+  if [[ -n "${first_remote}" ]]; then
+    src_ip="$(ip -4 route get "${first_remote}" 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="src"){print $(i+1); exit}}')"
+    if [[ -n "${src_ip}" ]]; then
+      OMPI_TCP_INCLUDE="$(ip -o -4 addr show | awk -v ip="${src_ip}" '$4 ~ ("^"ip"/") {print $4; exit}')"
+    fi
   fi
 fi
 
-if [[ -n "${OMPI_TCP_IF_INCLUDE}" ]]; then
-  echo "[start-mpi.sh] OpenMPI will use interface: ${OMPI_TCP_IF_INCLUDE}"
+if [[ -n "${OMPI_TCP_INCLUDE}" ]]; then
+  echo "[start-mpi.sh] OpenMPI TCP include: ${OMPI_TCP_INCLUDE}"
 else
-  echo "WARNING: Could not auto-detect OMPI_TCP_IF_INCLUDE. You should set it (e.g. eth0/eno1)." >&2
+  echo "WARNING: Could not auto-detect OMPI_TCP_INCLUDE. Set it manually (e.g. OMPI_TCP_INCLUDE=192.168.213.0/24)." >&2
 fi
-
-echo "[start-mpi.sh] Checking SSH connectivity to each *remote* host on port ${SSH_PORT}..."
-while read -r h; do
-  [[ -z "${h}" ]] && continue
-
-  if [[ "${h}" == "localhost" || "${h}" == "127.0.0.1" ]]; then
-    echo "  - ${h} (local, skip SSH check)"
-    continue
-  fi
-  echo "  - ${h}"
-  ssh -o BatchMode=yes -p "${SSH_PORT}" "root@${h}" "true" || {
-    echo "ERROR: Cannot SSH to ${h} on port ${SSH_PORT}." >&2
-    exit 5
-  }
-done < "${HOSTFILE}"
 
 NP=$(grep -cve '^\s*$' "${HOSTFILE}" | tr -d ' ')
 echo "[start-mpi.sh] Launching MPI: 1 rank per host, total ranks=${NP}"
@@ -123,9 +112,9 @@ MPICMD=(
   --mca oob tcp
 )
 
-if [[ -n "${OMPI_TCP_IF_INCLUDE}" ]]; then
-  MPICMD+=( --mca btl_tcp_if_include "${OMPI_TCP_IF_INCLUDE}" )
-  MPICMD+=( --mca oob_tcp_if_include "${OMPI_TCP_IF_INCLUDE}" )
+if [[ -n "${OMPI_TCP_INCLUDE}" ]]; then
+  MPICMD+=( --mca btl_tcp_if_include "${OMPI_TCP_INCLUDE}" )
+  MPICMD+=( --mca oob_tcp_if_include "${OMPI_TCP_INCLUDE}" )
 fi
 
 MPICMD+=( "${MPI_BIN}" )
