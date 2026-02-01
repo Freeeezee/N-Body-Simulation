@@ -8,6 +8,8 @@ NP="${MPI_NP:-0}"
 EXTRA_MPIRUN_ARGS="${MPI_EXTRA_ARGS:-}"
 SLOTS_PER_HOST="${MPI_SLOTS_PER_HOST:-1}"
 
+OVERLAY_CIDR_PREFIX="${MPI_OVERLAY_PREFIX:-10.}"
+
 setup_ssh() {
   mkdir -p /var/run/sshd /root/.ssh
   chmod 700 /root/.ssh
@@ -56,6 +58,14 @@ discover_hosts() {
   nl -ba "${HOSTFILE}"
 }
 
+detect_overlay_iface() {
+  ip -o -4 addr show \
+    | awk -v pfx="${OVERLAY_CIDR_PREFIX}" '
+        $0 ~ (" " pfx) {
+          print $2; exit
+        }'
+}
+
 run_mpi() {
   if [[ ! -x "${APP}" ]]; then
     echo "ERROR: MPI binary not found/executable: ${APP}" >&2
@@ -73,10 +83,19 @@ run_mpi() {
 
   local np="${NP}"
   if [[ "${np}" -le 0 ]]; then
-    np="${host_count}"
+    np="$(( host_count * SLOTS_PER_HOST ))"
   fi
 
-  echo "Launching OpenMPI: np=${np}, hosts=${host_count}, slots_per_host=${SLOTS_PER_HOST}"
+  local overlay_if
+  overlay_if="$(detect_overlay_iface || true)"
+  if [[ -z "${overlay_if}" ]]; then
+    echo "ERROR: Could not detect overlay interface (prefix ${OVERLAY_CIDR_PREFIX})." >&2
+    echo "Tip: set MPI_OVERLAY_PREFIX to match your overlay subnet (e.g. 10.0. or 192.168.)." >&2
+    ip -o -4 addr show >&2
+    exit 4
+  fi
+
+  echo "Launching OpenMPI: np=${np}, hosts=${host_count}, slots_per_host=${SLOTS_PER_HOST}, iface=${overlay_if}"
 
   exec mpirun \
     --allow-run-as-root \
@@ -85,8 +104,10 @@ run_mpi() {
     --map-by "ppr:${SLOTS_PER_HOST}:node" \
     --bind-to none \
     --mca plm_rsh_agent "ssh" \
+    --mca oob_tcp_if_include "${overlay_if}" \
     --mca btl tcp,self \
-    --mca btl_tcp_if_exclude lo,docker0 \
+    --mca btl_tcp_if_include "${overlay_if}" \
+    --mca oob_tcp_disable_family ipv6 \
     --report-bindings \
     ${EXTRA_MPIRUN_ARGS} \
     "${APP}"
