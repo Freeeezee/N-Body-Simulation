@@ -18,7 +18,6 @@ set -euo pipefail
 : "${ONLY_RANK0_OUTPUT:=1}"
 
 : "${OMPI_TCP_IF_INCLUDE:=}"
-: "${OMPI_TCP_IF_EXCLUDE:=lo,docker0,virbr0,br0}"
 
 mkdir -p /var/run/sshd /root/.ssh
 chmod 700 /root/.ssh
