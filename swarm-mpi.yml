@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  mpi:
+    image: nbody-mpi:latest
+    command: ["daemon"]
+    networks:
+      - mpinet
+    deploy:
+      mode: global
+      restart_policy:
+        condition: any
+
+networks:
+  mpinet:
+    driver: overlay
+    attachable: true

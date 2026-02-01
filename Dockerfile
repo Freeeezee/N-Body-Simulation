@@ -48,6 +48,9 @@ COPY --from=build /src/src/kernels ./kernels
 
 COPY --from=build /src/generated_bodies.txt ./generated_bodies.txt
 
+COPY mpi_key ./mpi_key
+COPY mpi_key.pub ./mpi_key.pub
+
 COPY start-mpi.sh /opt/nbody/start-mpi.sh
 RUN sed -i 's/\r$//' /opt/nbody/start-mpi.sh \
  && chmod +x /opt/nbody/start-mpi.sh
