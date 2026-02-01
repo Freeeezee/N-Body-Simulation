@@ -19,6 +19,14 @@ docker swarm join-token worker
 docker build -t nbody-mpi:latest .
 ```
 
+## Manager – Deploy
+
+```shell
+docker stack deploy -c swarm-mpi.yml nbody
+docker service ls
+docker service ps nbody_mpi
+```
+
 ## Manager – Run
 
 ```shell
