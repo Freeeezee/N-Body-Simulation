@@ -6,6 +6,7 @@ SERVICE_DNS_NAME="${MPI_SERVICE_DNS:-tasks.mpi}"
 HOSTFILE="${MPI_HOSTFILE:-/tmp/hostfile}"
 NP="${MPI_NP:-0}"
 EXTRA_MPIRUN_ARGS="${MPI_EXTRA_ARGS:-}"
+SLOTS_PER_HOST="${MPI_SLOTS_PER_HOST:-1}"
 
 setup_ssh() {
   mkdir -p /var/run/sshd /root/.ssh
@@ -34,14 +35,22 @@ EOF
   chmod 600 /root/.ssh/config
 }
 
-start_sshd() {
+sshd_running() {
+  pgrep -x sshd >/dev/null 2>&1 || ss -ltn 2>/dev/null | grep -qE '(:22\s)'
+}
+
+start_sshd_if_needed() {
+  if sshd_running; then
+    return 0
+  fi
   /usr/sbin/sshd -D -e &
 }
 
 discover_hosts() {
   getent ahostsv4 "${SERVICE_DNS_NAME}" \
     | awk '{print $1}' \
-    | sort -u > "${HOSTFILE}"
+    | sort -u \
+    | awk -v s="${SLOTS_PER_HOST}" '{print $1 " slots=" s}' > "${HOSTFILE}"
 
   echo "Discovered hosts (${SERVICE_DNS_NAME}) -> ${HOSTFILE}:"
   nl -ba "${HOSTFILE}"
@@ -67,19 +76,25 @@ run_mpi() {
     np="${host_count}"
   fi
 
-  echo "Launching OpenMPI: np=${np}, hosts=${host_count}"
+  echo "Launching OpenMPI: np=${np}, hosts=${host_count}, slots_per_host=${SLOTS_PER_HOST}"
+
   exec mpirun \
     --allow-run-as-root \
     --hostfile "${HOSTFILE}" \
     -np "${np}" \
+    --map-by "ppr:${SLOTS_PER_HOST}:node" \
+    --bind-to none \
     --mca plm_rsh_agent "ssh" \
+    --mca btl tcp,self \
+    --mca btl_tcp_if_exclude lo,docker0 \
+    --report-bindings \
     ${EXTRA_MPIRUN_ARGS} \
     "${APP}"
 }
 
 main() {
   setup_ssh
-  start_sshd
+  start_sshd_if_needed
 
   case "${1:-daemon}" in
     run)
