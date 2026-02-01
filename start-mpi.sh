@@ -9,15 +9,10 @@ set -euo pipefail
 : "${HOSTFILE:=/opt/nbody/hosts}"
 
 : "${SSH_PORT:=2222}"
-
-: "${SSHD_PORT:=22}"
-
 : "${SSH_PRIVATE_KEY:=}"
 : "${SSH_PUBLIC_KEY:=}"
 
 : "${ONLY_RANK0_OUTPUT:=1}"
-
-: "${OMPI_TCP_INCLUDE:=}"
 
 mkdir -p /var/run/sshd /root/.ssh
 chmod 700 /root/.ssh
@@ -42,14 +37,11 @@ if [[ -n "${SSH_PRIVATE_KEY}" ]]; then
   chmod 600 /root/.ssh/id_rsa
 fi
 
-sed -i "s/^#\?Port .*/Port ${SSHD_PORT}/" /etc/ssh/sshd_config
-grep -q '^ListenAddress ' /etc/ssh/sshd_config || echo "ListenAddress 0.0.0.0" >> /etc/ssh/sshd_config
-
 ssh-keygen -A >/dev/null 2>&1 || true
 /usr/sbin/sshd
 
 if [[ "${ROLE}" == "worker" ]]; then
-  echo "[start-mpi.sh] ROLE=worker: sshd running (listening on ${SSHD_PORT})."
+  echo "[start-mpi.sh] ROLE=worker: sshd running (container:22 -> host:${SSH_PORT} if published)."
   exec tail -f /dev/null
 fi
 
@@ -70,30 +62,21 @@ fi
 
 printf "%s\n" ${HOSTS} > "${HOSTFILE}"
 
-# Auto-detect a good TCP include (CIDR) based on routing to first remote host
-if [[ -z "${OMPI_TCP_INCLUDE}" ]] && command -v ip >/dev/null 2>&1; then
-  first_remote=""
-  while read -r h; do
-    [[ -z "${h}" ]] && continue
-    if [[ "${h}" != "localhost" && "${h}" != "127.0.0.1" ]]; then
-      first_remote="${h}"
-      break
-    fi
-  done < "${HOSTFILE}"
+echo "[start-mpi.sh] Checking SSH connectivity to each *remote* host on port ${SSH_PORT}..."
+while read -r h; do
+  [[ -z "${h}" ]] && continue
 
-  if [[ -n "${first_remote}" ]]; then
-    src_ip="$(ip -4 route get "${first_remote}" 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="src"){print $(i+1); exit}}')"
-    if [[ -n "${src_ip}" ]]; then
-      OMPI_TCP_INCLUDE="$(ip -o -4 addr show | awk -v ip="${src_ip}" '$4 ~ ("^"ip"/") {print $4; exit}')"
-    fi
+  if [[ "${h}" == "localhost" || "${h}" == "127.0.0.1" ]]; then
+    echo "  - ${h} (local, skip SSH check)"
+    continue
   fi
-fi
 
-if [[ -n "${OMPI_TCP_INCLUDE}" ]]; then
-  echo "[start-mpi.sh] OpenMPI TCP include: ${OMPI_TCP_INCLUDE}"
-else
-  echo "WARNING: Could not auto-detect OMPI_TCP_INCLUDE. Set it manually (e.g. OMPI_TCP_INCLUDE=192.168.213.0/24)." >&2
-fi
+  echo "  - ${h}"
+  ssh -o BatchMode=yes "root@${h}" "true" || {
+    echo "ERROR: Cannot SSH to ${h} on port ${SSH_PORT}." >&2
+    exit 5
+  }
+done < "${HOSTFILE}"
 
 NP=$(grep -cve '^\s*$' "${HOSTFILE}" | tr -d ' ')
 echo "[start-mpi.sh] Launching MPI: 1 rank per host, total ranks=${NP}"
@@ -105,19 +88,8 @@ MPICMD=(
   -np "${NP}"
   -map-by ppr:1:node
   --tag-output
-
-  --mca plm_rsh_agent "ssh -p ${SSH_PORT} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
-
-  --mca btl tcp,self
-  --mca oob tcp
+  "${MPI_BIN}"
 )
-
-if [[ -n "${OMPI_TCP_INCLUDE}" ]]; then
-  MPICMD+=( --mca btl_tcp_if_include "${OMPI_TCP_INCLUDE}" )
-  MPICMD+=( --mca oob_tcp_if_include "${OMPI_TCP_INCLUDE}" )
-fi
-
-MPICMD+=( "${MPI_BIN}" )
 
 if [[ -n "${MPI_ARGS}" ]]; then
   # shellcheck disable=SC2206
