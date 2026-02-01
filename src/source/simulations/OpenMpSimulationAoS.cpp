@@ -8,7 +8,7 @@ std::vector<Body> OpenMpSimulationAoS::calculateNextTick() {
     const size_t n = bodies.size();
 
 #pragma omp parallel for schedule(static)
-    for (int i = 0; i < bodies.size(); ++i) {
+    for (unsigned long i = startIndex; i < endIndex; ++i) {
         const glm::vec3 pos = bodies[i].position;
         glm::vec3 vel = bodies[i].velocity;
 
