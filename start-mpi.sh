@@ -121,8 +121,6 @@ MPICMD=(
 
   --mca btl tcp,self
   --mca oob tcp
-  --mca btl_tcp_if_exclude "${OMPI_TCP_IF_EXCLUDE}"
-  --mca oob_tcp_if_exclude "${OMPI_TCP_IF_EXCLUDE}"
 )
 
 if [[ -n "${OMPI_TCP_IF_INCLUDE}" ]]; then
