@@ -195,9 +195,6 @@ int main(int argc, char** argv) {
 
         std::cout << "Total time: " << sw.elapsedMillis() << " ms" << std::endl;
         std::cout << "Average time per step: " << sw.elapsedMillis() / STEPS << " ms" << std::endl << std::endl;
-
-        std::cout << "Launching renderer..." << std::endl;
-        playSimulationResults(&simulationResults);
     }
 
     MPI_Finalize();
