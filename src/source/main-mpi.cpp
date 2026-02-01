@@ -10,11 +10,10 @@
 #include "util/runSimulation.hpp"
 
 #include "simulations/OpenMpSimulationAoS.hpp"
-#include "simulations/SequentialSimulationAoS.hpp"
 #include "util/stopwatch.hpp"
 
-using ChosenSimulation = SequentialSimulationAoS;
-#define STEPS 500
+using ChosenSimulation = OpenMpSimulationAoS;
+#define STEPS 750
 #define TIMING_STEPS 5
 
 static void computeChunk(const int worldRank, const int worldSize, const size_t n,
