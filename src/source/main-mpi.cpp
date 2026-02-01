@@ -87,9 +87,9 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &worldRank);
     MPI_Comm_size(MPI_COMM_WORLD, &worldSize);
 
-    system(
-        ("echo \"" + std::to_string(worldRank) + " $(hostname -I)\"").c_str()
-    );
+    // system(
+    //     ("echo \"" + std::to_string(worldRank) + " $(hostname -I)\"").c_str()
+    // );
 
     std::vector<Body> bodies;
     if (worldRank == 0) {
@@ -137,7 +137,7 @@ int main(int argc, char** argv) {
     sw.start();
 
     for (size_t step = 0; step < STEPS; ++step) {
-        std::cout << "Rank " << worldRank << " Step " << step + 1 << "Range: " << startIndex << " - " << endIndexExclusive << std::endl;
+        //std::cout << "Rank " << worldRank << " Step " << step + 1 << "Range: " << startIndex << " - " << endIndexExclusive << std::endl;
         MPI_Bcast(bodies.data(), static_cast<int>(n * sizeof(Body)), MPI_BYTE, 0, MPI_COMM_WORLD);
 
         simulation.setBodies(bodies);
