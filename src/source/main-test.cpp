@@ -64,7 +64,7 @@ void generateTestSets(const std::vector<int> &testCounts) {
 int main(int argc, char** argv) {
     const std::vector bodyCounts = { 20000 };
     const std::vector testStepCounts = { 750 };
-    constexpr int repetitions = 10;
+    constexpr int repetitions = 5;
 
     generateTestSets(bodyCounts);
 
@@ -78,11 +78,11 @@ int main(int argc, char** argv) {
        // suite.registerSoA2Simulation<OpenClSimulationSoA2>("OpenClSimulationSoA2");
        // suite.registerSoA2Simulation<OpenClSimulationSoA2SplitLoop>("OpenClSimulationSoA2SplitLoop");
         suite.registerSimulation<OpenMpSimulationAoS>("OpenMpSimulationAoS");
-        suite.registerSoA1Simulation<OpenMpSimulationSoA1>("OpenMpSimulationSoA1");
-        suite.registerSoA2Simulation<OpenMpSimulationSoA2>("OpenMpSimulationSoA2");
+        //suite.registerSoA1Simulation<OpenMpSimulationSoA1>("OpenMpSimulationSoA1");
+        //suite.registerSoA2Simulation<OpenMpSimulationSoA2>("OpenMpSimulationSoA2");
        // suite.registerSimulation<OpenMpSingleLoopSimulation>("OpenMpSingleLoopSimulation");
         //suite.registerSoA2Simulation<OpenMpSingleLoopSimulationSoA2>("OpenMpSingleLoopSimulationSoA2");
-        suite.registerSoA2Simulation<OpenMpSimulationSoA2SplitLoop>("OpenMpSimulationSoA2SplitLoop");
+        //suite.registerSoA2Simulation<OpenMpSimulationSoA2SplitLoop>("OpenMpSimulationSoA2SplitLoop");
         //suite.registerSimulation<MpiSimulation>("MpiSimulation");
         for (const int stepCount : testStepCounts) {
             suite.runAll(stepCount, repetitions);
