@@ -88,7 +88,9 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &worldRank);
     MPI_Comm_size(MPI_COMM_WORLD, &worldSize);
 
-    system("echo \"$(echo R1) $(hostname -I)\"");
+    system(
+        ("echo \"" + std::to_string(worldRank) + " $(hostname -I)\"").c_str()
+    );
 
     std::vector<Body> bodies;
     if (worldRank == 0) {
