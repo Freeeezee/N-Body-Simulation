@@ -10,7 +10,7 @@
 ### Installationsschritte
 
 1. Clone das Repo mit folgendem Command: `git clone --recursive https://github.com/KN-PACO/N-Body-Problem.git`
-   WICHTIG: Das `--recursive` flag sorgt dafür, dass auch die eingebundenen Repos mit geklont werden. Ohne diese läuft das Program nicht.
+   <br> WICHTIG: Das `--recursive` flag sorgt dafür, dass auch die eingebundenen Repos mit geklont werden. Ohne diese läuft das Program nicht.
 2. Öffne Visual Studio 2022, klicke auf "Open a local Folder" und wähle den Projekt Ordner aus (N-Body-Problem).
 3. Stelle sicher, dass im Output Fenster unten am Ende steht: "CMake generation finished."
 4. Klicke dann oben in auf das Configuration Drop-Down - üblicher weise ist dort x64-Debug ausgewählt - und gehe auf "Manage Configuration".
