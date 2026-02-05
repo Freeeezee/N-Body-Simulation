@@ -5,10 +5,10 @@
 
 std::vector<Body> OpenMpSimulationAoS::calculateNextTick() {
     std::vector<Body> newBodies(bodies.size());
-    const size_t n = bodies.size();
+    const int n = static_cast<int>(bodies.size());
 
 #pragma omp parallel for schedule(static)
-    for (unsigned long i = startIndex; i < endIndex; ++i) {
+    for (int i = static_cast<int>(startIndex); i < endIndex; ++i) {
         const glm::vec3 pos = bodies[i].position;
         glm::vec3 vel = bodies[i].velocity;
 
