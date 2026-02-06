@@ -10,10 +10,17 @@
 #include "util/runSimulation.hpp"
 
 #include "simulations/OpenMpSimulationAoS.hpp"
+#include "simulations/SequentialSimulationAoS.hpp"
+#include "simulations/SequentialSimulationSoA2.hpp"
 #include "util/stopwatch.hpp"
 
-using ChosenSimulation = OpenMpSimulationAoS;
+// The only supported Simulations in MPI are SequentialSimulationAoS and OpenMpSimulationAoS
+using ChosenSimulation = SequentialSimulationAoS;
+
+// Timesteps to calculate
 #define STEPS 750
+
+// Number of Timesteps after which the load on each node is rebalanced
 #define TIMING_STEPS 5
 
 static void computeChunk(const int worldRank, const int worldSize, const size_t n,
