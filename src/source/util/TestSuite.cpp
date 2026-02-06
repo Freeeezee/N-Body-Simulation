@@ -26,18 +26,14 @@ void TestSuite::runAll(const int steps, const int repetitions) const {
     std::vector<std::string> analyticsRows;
     analyticsRows.push_back("Simulation,Repetition,TotalTime(ms),AvgStep(ms),MSE_vs_Baseline,Status");
 
-    // Store baseline results for quality checks
     std::map<int, std::vector<Body> > baselineResults;
 
-    // 1. Identify and Run Baseline First (if exists)
     for (const auto &config: configs) {
         if (!config.isBaseline) continue;
 
         runWarmUp(config);
         std::cout << "Running Baseline: " << config.name << "..." << std::endl;
 
-        // We only really need to run the baseline once to get the "correct" numbers
-        // for quality checks, but we run 'repetitions' times for timing consistency.
         for (int r = 0; r < repetitions; ++r) {
             {
                 stopwatch sw; //
@@ -58,7 +54,6 @@ void TestSuite::runAll(const int steps, const int repetitions) const {
                     std::to_string(static_cast<double>(time) / steps) + ",0.0,Baseline"
                 );
 
-                // Store the first run as the "truth"
                 if (r == 0) {
                     baselineResults[0] = finalState;
                     saveResultToFile(config.name, bodySize, steps, finalState);
@@ -70,7 +65,6 @@ void TestSuite::runAll(const int steps, const int repetitions) const {
         std::cout << "\n  " << config.name << " complete.\n" << std::endl;
     }
 
-    // 2. Run all other simulations
     for (const auto &config: configs) {
         if (config.isBaseline) continue;
 
@@ -90,7 +84,6 @@ void TestSuite::runAll(const int steps, const int repetitions) const {
 
                 auto finalState = runner->getCurrentState();
 
-                // Quality Check against Baseline
                 double mse = 0.0;
                 std::string status = "OK";
 
@@ -114,7 +107,6 @@ void TestSuite::runAll(const int steps, const int repetitions) const {
                     std::cerr << "  [WARNING] " << config.name << " diverted heavily! MSE: " << mse << std::endl;
                 }
 
-                // Save results for the first repetition
                 if (r == 0) {
                     saveResultToFile(config.name, bodySize, steps, finalState);
                     std::cout << "  reps done:";
@@ -132,7 +124,6 @@ void TestSuite::runAll(const int steps, const int repetitions) const {
 void TestSuite::runWarmUp(const SimulationConfig &config) const {
     std::cout << "Warming up " << config.name << "...";
     {
-        // Create a temporary instance just to warm up CPU caches and branch predictors
         const std::unique_ptr<ISimRunner> warmUpRunner(config.factory(initialBodies));
         for (int i = 0; i < 10; ++i) warmUpRunner->step();
     }
