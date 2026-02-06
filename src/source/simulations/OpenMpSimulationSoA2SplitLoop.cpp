@@ -29,6 +29,8 @@ BodiesSoA2 OpenMpSimulationSoA2SplitLoop::calculateNextTick() {
         float accY = 0.0f;
         float accZ = 0.0f;
 
+        // --- Split the inner loop in two, excluding the current index ---
+
         auto accumulateForce = [&](int j) {
             const float dx = bodies.posX[j] - p_ix;
             const float dy = bodies.posY[j] - p_iy;
