@@ -17,7 +17,7 @@ int main() {
     // Either autogenerate using generateBodies or load bodies from a file and deserialize
 
     const auto bodies = generateBodies(
-        16384,
+        10000,
         1.0f,
         1.0f,
         {-200.0f, -200.0f, -200.0f},
