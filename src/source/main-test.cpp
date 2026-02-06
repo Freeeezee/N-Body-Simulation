@@ -10,6 +10,7 @@
 #include "simulations/OpenClSimulationSoA1.hpp"
 #include "simulations/SequentialSimulationSoA2.hpp"
 #include "simulations/OpenClSimulationSoA2SplitLoop.hpp"
+#include "simulations/OpenClSimulationSoA2SplitLoopTiled.hpp"
 #include "simulations/OpenMpSimulationAoS.hpp"
 #include "simulations/OpenMpSimulationSoA1.hpp"
 #include "simulations/OpenMpSimulationSoA2.hpp"
@@ -87,6 +88,7 @@ int main(int argc, char** argv) {
         suite.registerSoA1Simulation<OpenClSimulationSoA1>("OpenClSimulationSoA1");
         suite.registerSoA2Simulation<OpenClSimulationSoA2>("OpenClSimulationSoA2");
         suite.registerSoA2Simulation<OpenClSimulationSoA2SplitLoop>("OpenClSimulationSoA2SplitLoop");
+        suite.registerSoA2Simulation<OpenClSimulationSoA2SplitLoopTiled>("OpenClSimulationSoA2SplitLoopTiled");
         suite.registerSimulation<OpenMpSimulationAoS>("OpenMpSimulationAoS");
         suite.registerSoA1Simulation<OpenMpSimulationSoA1>("OpenMpSimulationSoA1");
         suite.registerSoA2Simulation<OpenMpSimulationSoA2>("OpenMpSimulationSoA2");
