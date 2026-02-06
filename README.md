@@ -28,3 +28,10 @@
 - `n_body_simulation_body_gen.exe`: Generiert eine Startmenge an Bodies zufällig und speichert sie in `generated_bodies.txt`. Kann in `n_body_simulation.exe` oder `n_body_simulation_mpi.exe` eingelesen werden.
 - `n_body_simulation_mpi.exe`: Führt die Simulation in MPI aus. Benötigt eine `generated_bodies.txt` im Ausführungsverzeichnis. Ausgeführt durch `mpiexec -n <N> n_body_simulation_mpi.exe`. Verwendeter Algorithmus und Time-Steps können in `main-mpi.cpp` angepasst werden.
 - `n_body_simulation_test.exe`: Führt die in `main-test.cpp` definierte Testsuite aus. Nach Ausführung werden Zeitmetriken und Abweichungskoeffizienten falls eine Baseline definiert wurde in `test_suite_analytics_*steps_*bodies.csv` gespeichert.
+
+### Relevanter Code
+
+Gestartet werden Simulationen über die `main*.cpp` files. Dort findet auch die meiste Konfiguration statt.
+
+Implementierungen der Simulationen sind in `src/source/simulations` und (für OpenCL) `src/kernels` zu finden.
+
