@@ -33,7 +33,7 @@ int main() {
     // If the Simulations name contains 'SoA1', use the result with BodiesSoA1,
     // if it contains 'SoA2', use the result with BodiesSoA2
     // otherwise use std::vector<Body> result
-    const auto simulation = new OpenClSimulationSoA2SplitLoopTiled(1.0f, bodies);
+    const auto simulation = new OpenClSimulationSoA2SplitLoop(1.0f, bodies);
 
     //std::vector<std::vector<Body>> simulationResults = {};
     //std::vector<BodiesSoA1> simulationResults = {};
