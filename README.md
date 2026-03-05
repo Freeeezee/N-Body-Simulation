@@ -13,7 +13,7 @@ This academic project aims to simulate the n-Body-Problem in a performance-effic
 
 *This is a short overview to help understand the codebase. For a full technical explanation read the [report (German)](doc/documentation.pdf).*
 
-To calculate the simulation, a 'naive' algorithm was used that calculates the incoming forces from all bodies in the system for all bodies in the system. More sophisticated solutions such as the [Barnes-Hut Algorithm](https://en.wikipedia.org/wiki/Barnes%E2%80%93Hut_simulation) have been omitted due to time constraints and a focus on parallel technologies.
+To calculate the simulation, a 'naive' algorithm was used that calculates the incoming forces from all bodies in the system for all bodies in the system. More sophisticated solutions such as the [Barnes-Hut Algorithm](https://en.wikipedia.org/wiki/Barnes%E2%80%93Hut_simulation) have been omitted due to time constraints and a focus on parallel technology analysis.
 
 This naive algorithm was then implemented in various ways with variying degrees of parallelism to analyze performance. 
 Technologies used to improve performance were *OpenMP*, *MPI* and GPU parallelism through *OpenCL*, together with techniques such as *Structure of Arrays* for better CPU vectorization or better GPU memory usage, or GPU *shared memory tiling*.
@@ -27,11 +27,11 @@ As seen in the graph below, given the right optimizations even the CPU is capabl
 The implemented algorithm for MPI was not fully optimized and only run across two machines, but already demonstrates potential. With full optimizations and a higher amount of similar and high-performance machines it's performance potential lies between the single OpenMP machine and OpenCL.
 Maximum performance however is achieved by OpenCL. The data-parallel nature of the algorithm is perfectly suited for the parallel capabilities of the GPU. 
 
-![](doc/img/summary.pdf)
+![](doc/img/summary.jpg)
 
 With full optimizations applied, the maximum amount of bodies simulated in a relatively efficient time was about 2 million, where 750 time steps took around an hour.
 
-![](doc/img/to-the-stars-and-beyond.pdf)
+![](doc/img/to-the-stars-and-beyond.jpg)
 
 ## Install & Run
 
